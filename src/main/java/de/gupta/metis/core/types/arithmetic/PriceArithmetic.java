@@ -1,7 +1,8 @@
-package de.gupta.metis.core.types.price;
+package de.gupta.metis.core.types.arithmetic;
 
 import de.gupta.commons.utility.math.algebra.structure.binary.notation.additive.AdditiveAbelianGroupStructure;
-import de.gupta.metis.core.types.arithmetic.QuotingConventionAwareArithmetic;
+import de.gupta.metis.core.types.price.PriceType;
+import de.gupta.metis.core.types.price.PriceTypeFactory;
 import de.gupta.metis.core.types.quoting.QuotingConvention;
 
 public final class PriceArithmetic implements AdditiveAbelianGroupStructure<PriceType>

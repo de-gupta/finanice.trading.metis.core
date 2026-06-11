@@ -1,8 +1,9 @@
-package de.gupta.metis.core.types.size;
+package de.gupta.metis.core.types.arithmetic;
 
 import de.gupta.commons.utility.math.algebra.structure.binary.notation.additive.AdditiveAbelianGroupStructure;
-import de.gupta.metis.core.types.arithmetic.QuotingConventionAwareArithmetic;
 import de.gupta.metis.core.types.quoting.QuotingConvention;
+import de.gupta.metis.core.types.size.SizeType;
+import de.gupta.metis.core.types.size.SizeTypeFactory;
 
 public final class SizeArithmetic implements AdditiveAbelianGroupStructure<SizeType>
 {

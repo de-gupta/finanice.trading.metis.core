@@ -8,6 +8,7 @@ module de.gupta.metis.core
 	exports de.gupta.metis.core.types.size;
 
 	exports de.gupta.metis.core.types.money;
+	exports de.gupta.metis.core.types.arithmetic;
 
 	requires de.gupta.athena;
 	requires de.gupta.aletheia;

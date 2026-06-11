@@ -9,7 +9,7 @@ import de.gupta.metis.core.types.quoting.QuotingConvention;
 
 import java.util.function.Function;
 
-public final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements AdditiveAbelianGroupStructure<E>
+final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements AdditiveAbelianGroupStructure<E>
 {
 	private final QuotingConvention leftQuotingConvention;
 	private final QuotingConvention rightQuotingConvention;

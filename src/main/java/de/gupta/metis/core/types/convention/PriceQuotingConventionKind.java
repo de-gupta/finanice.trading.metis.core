@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.convention;
 
-public enum PriceQuotingConventionKind
+public enum PriceQuotingConventionKind implements QuotingConventionKind
 {
 	CURRENCY,
 	TICKS,

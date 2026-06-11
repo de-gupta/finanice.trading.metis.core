@@ -1,6 +1,7 @@
 package de.gupta.metis.core.types.convention;
 
 public record PriceQuotingConvention(PriceQuotingConventionKind kind, int scale)
+		implements QuotingConvention<PriceQuotingConventionKind>
 {
 	public static PriceQuotingConvention currency(final int scale)
 	{
@@ -20,10 +21,5 @@ public record PriceQuotingConvention(PriceQuotingConventionKind kind, int scale)
 	public static PriceQuotingConvention thirtySeconds()
 	{
 		return new PriceQuotingConvention(PriceQuotingConventionKind.THIRTY_SECONDS, 0);
-	}
-
-	public boolean isCompatibleWith(final PriceQuotingConvention other)
-	{
-		return kind == other.kind;
 	}
 }

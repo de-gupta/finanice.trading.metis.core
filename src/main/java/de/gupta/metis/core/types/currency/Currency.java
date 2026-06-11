@@ -1,4 +1,4 @@
-package de.gupta.metis.core.types;
+package de.gupta.metis.core.types.currency;
 
 @FunctionalInterface
 public interface Currency

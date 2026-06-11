@@ -1,5 +1,6 @@
 package de.gupta.metis.core.types.quoting;
 
-public interface VariableScaleQuotingUnit extends QuotingUnit
+public sealed interface VariableScaleQuotingUnit extends QuotingUnit
+		permits PriceQuotingUnit.VariableScale, SizeQuotingUnit.VariableScale
 {
 }

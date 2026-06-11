@@ -8,6 +8,7 @@ import de.gupta.metis.core.types.quoting.QuotingConvention;
 import de.gupta.metis.core.types.size.SizeType;
 import de.gupta.metis.core.types.size.SizeTypeFactory;
 
+@Deprecated(forRemoval = true)
 public final class SizeArithmetic implements AdditiveAbelianGroupStructure<SizeType>
 {
 	private final QuotingConvention leftQuotingConvention;

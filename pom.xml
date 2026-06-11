@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.github.de-gupta</groupId>
         <artifactId>de-gupta-parent</artifactId>
-        <version>0.2.2</version>
+        <version>0.2.3-SNAPSHOT</version>
     </parent>
 
     <name>${project.artifactId}</name>
@@ -20,5 +20,12 @@
         <url>https://github.com/de-gupta/metis.core.git</url>
         <tag>HEAD</tag>
     </scm>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.de-gupta</groupId>
+            <artifactId>athena</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

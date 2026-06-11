@@ -1,12 +1,8 @@
 package de.gupta.metis.core.types.quoting;
 
-public sealed interface SizeQuotingUnit extends QuotingUnit
-		permits SizeQuotingUnit.VariableScale
+public enum SizeQuotingUnit implements QuotingUnit, VariableScaleQuotingUnit
 {
-	enum VariableScale implements SizeQuotingUnit, VariableScaleQuotingUnit
-	{
-		UNITS,
-		LOTS,
-		CONTRACTS
-	}
+	UNITS,
+	LOTS,
+	CONTRACTS
 }

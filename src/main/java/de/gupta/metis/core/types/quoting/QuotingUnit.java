@@ -1,5 +1,5 @@
 package de.gupta.metis.core.types.quoting;
 
-public interface QuotingUnit
+public sealed interface QuotingUnit permits PriceQuotingUnit, SizeQuotingUnit
 {
 }

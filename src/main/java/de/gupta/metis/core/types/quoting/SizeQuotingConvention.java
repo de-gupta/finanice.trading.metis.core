@@ -1,31 +1,24 @@
 package de.gupta.metis.core.types.quoting;
 
-public sealed interface SizeQuotingConvention extends QuotingConvention
-		permits SizeQuotingConvention.Variable
+public record SizeQuotingConvention(SizeQuotingUnit unit, int scale) implements QuotingConvention
 {
-	@Override
-	SizeQuotingUnit unit();
-
-	default boolean isCompatibleWith(final SizeQuotingConvention other)
+	public static SizeQuotingConvention units(final int scale)
 	{
-		return unit().equals(other.unit());
+		return new SizeQuotingConvention(SizeQuotingUnit.UNITS, scale);
 	}
 
-	record Variable(SizeQuotingUnit.VariableScale unit, int scale) implements SizeQuotingConvention
+	public static SizeQuotingConvention lots(final int scale)
 	{
-		public static Variable units(final int scale)
-		{
-			return new Variable(SizeQuotingUnit.VariableScale.UNITS, scale);
-		}
+		return new SizeQuotingConvention(SizeQuotingUnit.LOTS, scale);
+	}
 
-		public static Variable lots(final int scale)
-		{
-			return new Variable(SizeQuotingUnit.VariableScale.LOTS, scale);
-		}
+	public static SizeQuotingConvention contracts(final int scale)
+	{
+		return new SizeQuotingConvention(SizeQuotingUnit.CONTRACTS, scale);
+	}
 
-		public static Variable contracts(final int scale)
-		{
-			return new Variable(SizeQuotingUnit.VariableScale.CONTRACTS, scale);
-		}
+	public boolean isCompatibleWith(final SizeQuotingConvention other)
+	{
+		return unit == other.unit;
 	}
 }

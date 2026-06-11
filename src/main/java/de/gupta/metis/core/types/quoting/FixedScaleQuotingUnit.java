@@ -1,13 +1,12 @@
 package de.gupta.metis.core.types.quoting;
 
-public sealed interface FixedScaleQuotingUnit extends QuotingUnit
-		permits FixedScaleQuotingUnit.FixedScaleQuotingUnits
+public interface FixedScaleQuotingUnit
 {
 	int scale();
 
 	enum FixedScaleQuotingUnits implements FixedScaleQuotingUnit
 	{
-		BASIS_POINTS(4);
+		BASIS_POINT(10^-4);
 
 		private final int scale;
 
@@ -17,7 +16,7 @@ public sealed interface FixedScaleQuotingUnit extends QuotingUnit
 			return scale;
 		}
 
-		FixedScaleQuotingUnits(int scale)
+		FixedScaleQuotingUnits(final int scale)
 		{
 			this.scale = scale;
 		}

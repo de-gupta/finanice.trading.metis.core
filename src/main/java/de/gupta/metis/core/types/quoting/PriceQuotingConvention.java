@@ -1,31 +1,24 @@
 package de.gupta.metis.core.types.quoting;
 
-public sealed interface PriceQuotingConvention extends QuotingConvention
-		permits PriceQuotingConvention.Variable
+public record PriceQuotingConvention(PriceQuotingUnit unit, int scale) implements QuotingConvention
 {
-	@Override
-	PriceQuotingUnit unit();
-
-	default boolean isCompatibleWith(final PriceQuotingConvention other)
+	public static PriceQuotingConvention ticks(final int scale)
 	{
-		return unit().equals(other.unit());
+		return new PriceQuotingConvention(PriceQuotingUnit.TICKS, scale);
 	}
 
-	record Variable(PriceQuotingUnit.VariableScale unit, int scale) implements PriceQuotingConvention
+	public static PriceQuotingConvention currency(final int scale)
 	{
-		public static Variable ticks(final int scale)
-		{
-			return new Variable(PriceQuotingUnit.VariableScale.TICKS, scale);
-		}
+		return new PriceQuotingConvention(PriceQuotingUnit.CURRENCY, scale);
+	}
 
-		public static Variable currency(final int scale)
-		{
-			return new Variable(PriceQuotingUnit.VariableScale.CURRENCY, scale);
-		}
+	public static PriceQuotingConvention thirtySeconds(final int scale)
+	{
+		return new PriceQuotingConvention(PriceQuotingUnit.THIRTY_SECONDS, scale);
+	}
 
-		public static Variable thirtySeconds(final int scale)
-		{
-			return new Variable(PriceQuotingUnit.VariableScale.THIRTY_SECONDS, scale);
-		}
+	public boolean isCompatibleWith(final PriceQuotingConvention other)
+	{
+		return unit == other.unit;
 	}
 }

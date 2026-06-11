@@ -88,6 +88,12 @@ final class TradingNumberImpl implements TradingNumber
 		};
 	}
 
+	@Override
+	public String toString()
+	{
+		return Long.toString(value);
+	}
+
 	private TradingNumberImpl(final long value)
 	{
 		this.value = value;

@@ -5,10 +5,69 @@ public interface Currency
 {
 	int canonicalScale();
 
-	Currency USD = () -> 2;
-	Currency EUR = () -> 2;
-	Currency JPY = () -> 0;
-	Currency GBP = () -> 2;
-	Currency BTC = () -> 8;
-	Currency ETH = () -> 9;
+	enum USD implements Currency
+	{
+		INSTANCE;
+
+		@Override
+		public int canonicalScale()
+		{
+			return 2;
+		}
+	}
+
+	enum EUR implements Currency
+	{
+		INSTANCE;
+
+		@Override
+		public int canonicalScale()
+		{
+			return 2;
+		}
+	}
+
+	enum JPY implements Currency
+	{
+		INSTANCE;
+
+		@Override
+		public int canonicalScale()
+		{
+			return 0;
+		}
+	}
+
+	enum GBP implements Currency
+	{
+		INSTANCE;
+
+		@Override
+		public int canonicalScale()
+		{
+			return 2;
+		}
+	}
+
+	enum BTC implements Currency
+	{
+		INSTANCE;
+
+		@Override
+		public int canonicalScale()
+		{
+			return 8;
+		}
+	}
+
+	enum ETH implements Currency
+	{
+		INSTANCE;
+
+		@Override
+		public int canonicalScale()
+		{
+			return 9;
+		}
+	}
 }

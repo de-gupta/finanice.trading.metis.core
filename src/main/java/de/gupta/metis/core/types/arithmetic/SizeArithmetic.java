@@ -1,15 +1,17 @@
-package de.gupta.metis.core.types.size;
+package de.gupta.metis.core.types.arithmetic;
 
 import de.gupta.aletheia.functional.Unfolding;
 import de.gupta.commons.utility.math.algebra.structure.binary.notation.additive.AdditiveAbelianGroupStructure;
 import de.gupta.metis.core.types.number.TradingNumber;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
-import de.gupta.metis.core.types.quoting.SizeQuotingConvention;
+import de.gupta.metis.core.types.quoting.QuotingConvention;
+import de.gupta.metis.core.types.size.SizeType;
+import de.gupta.metis.core.types.size.SizeTypeFactory;
 
-public class SizeArithmetic implements AdditiveAbelianGroupStructure<SizeType>
+public final class SizeArithmetic implements AdditiveAbelianGroupStructure<SizeType>
 {
-	private final SizeQuotingConvention leftQuotingConvention;
-	private final SizeQuotingConvention rightQuotingConvention;
+	private final QuotingConvention leftQuotingConvention;
+	private final QuotingConvention rightQuotingConvention;
 
 	@Override
 	public SizeType negate(final SizeType element)
@@ -39,8 +41,8 @@ public class SizeArithmetic implements AdditiveAbelianGroupStructure<SizeType>
 		return size.value().multiply(TradingNumberFactory.of(scale));
 	}
 
-	SizeArithmetic(final SizeQuotingConvention leftQuotingConvention,
-	               final SizeQuotingConvention rightQuotingConvention)
+	SizeArithmetic(final QuotingConvention leftQuotingConvention,
+	               final QuotingConvention rightQuotingConvention)
 	{
 		this.leftQuotingConvention = leftQuotingConvention;
 		this.rightQuotingConvention = rightQuotingConvention;

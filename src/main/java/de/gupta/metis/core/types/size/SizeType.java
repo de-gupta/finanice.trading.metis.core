@@ -1,19 +1,9 @@
 package de.gupta.metis.core.types.size;
 
+import de.gupta.commons.utility.math.algebra.element.binary.notation.additive.Zero;
 import de.gupta.metis.core.types.number.TradingNumber;
-import de.gupta.metis.core.types.number.TradingNumberFactory;
 
-public sealed interface SizeType permits SizeTypeImpl
+public sealed interface SizeType extends Zero<SizeType> permits SizeTypeImpl
 {
 	TradingNumber value();
-
-	static SizeType of(final long value)
-	{
-		return SizeTypeImpl.of(TradingNumberFactory.of(value));
-	}
-
-	static SizeType of(final TradingNumber value)
-	{
-		return SizeTypeImpl.of(value);
-	}
 }

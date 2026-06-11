@@ -5,7 +5,8 @@ import de.gupta.metis.core.types.number.TradingNumberFactory;
 
 record SizeTypeImpl(TradingNumber value) implements SizeType
 {
-	static SizeType zero()
+	@Override
+	public SizeType zero()
 	{
 		return of(TradingNumberFactory.of(0));
 	}

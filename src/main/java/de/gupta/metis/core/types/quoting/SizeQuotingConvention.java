@@ -16,9 +16,4 @@ public record SizeQuotingConvention(SizeQuotingUnit unit, int scale) implements 
 	{
 		return new SizeQuotingConvention(SizeQuotingUnit.CONTRACTS, scale);
 	}
-
-	public boolean isCompatibleWith(final SizeQuotingConvention other)
-	{
-		return unit == other.unit;
-	}
 }

@@ -5,4 +5,9 @@ public sealed interface QuotingConvention permits PriceQuotingConvention, SizeQu
 	QuotingUnit unit();
 
 	int scale();
+
+	default boolean isCompatibleWith(final QuotingConvention other)
+	{
+		return this.unit() == other.unit();
+	}
 }

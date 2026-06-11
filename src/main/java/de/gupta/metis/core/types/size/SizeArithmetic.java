@@ -6,7 +6,12 @@ import de.gupta.metis.core.types.quoting.QuotingConvention;
 
 public final class SizeArithmetic implements AdditiveAbelianGroupStructure<SizeType>
 {
-	private final QuotingConventionAwareArithmetic<SizeType> arithmetic;
+	private final QuotingConventionAwareArithmetic<SizeType> delegate;
+
+	public static SizeArithmetic of(final QuotingConvention quotingConvention)
+	{
+		return of(quotingConvention, quotingConvention);
+	}
 
 	public static SizeArithmetic of(final QuotingConvention leftQuotingConvention,
 	                                final QuotingConvention rightQuotingConvention)
@@ -17,25 +22,25 @@ public final class SizeArithmetic implements AdditiveAbelianGroupStructure<SizeT
 	@Override
 	public SizeType negate(final SizeType element)
 	{
-		return arithmetic.negate(element);
+		return delegate.negate(element);
 	}
 
 	@Override
 	public SizeType zero()
 	{
-		return arithmetic.zero();
+		return delegate.zero();
 	}
 
 	@Override
 	public SizeType add(final SizeType left, final SizeType right)
 	{
-		return arithmetic.add(left, right);
+		return delegate.add(left, right);
 	}
 
 	private SizeArithmetic(final QuotingConvention leftQuotingConvention,
 	                       final QuotingConvention rightQuotingConvention)
 	{
-		this.arithmetic =
+		this.delegate =
 				QuotingConventionAwareArithmetic.of(leftQuotingConvention, rightQuotingConvention, SizeType::value,
 						SizeTypeFactory::sizeOf);
 	}

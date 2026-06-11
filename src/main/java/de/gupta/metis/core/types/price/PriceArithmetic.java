@@ -6,7 +6,12 @@ import de.gupta.metis.core.types.quoting.QuotingConvention;
 
 public final class PriceArithmetic implements AdditiveAbelianGroupStructure<PriceType>
 {
-	private final QuotingConventionAwareArithmetic<PriceType> arithmetic;
+	private final QuotingConventionAwareArithmetic<PriceType> delegate;
+
+	public static PriceArithmetic of(final QuotingConvention quotingConvention)
+	{
+		return of(quotingConvention, quotingConvention);
+	}
 
 	public static PriceArithmetic of(final QuotingConvention leftQuotingConvention,
 	                                 final QuotingConvention rightQuotingConvention)
@@ -17,25 +22,25 @@ public final class PriceArithmetic implements AdditiveAbelianGroupStructure<Pric
 	@Override
 	public PriceType negate(final PriceType element)
 	{
-		return arithmetic.negate(element);
+		return delegate.negate(element);
 	}
 
 	@Override
 	public PriceType zero()
 	{
-		return arithmetic.zero();
+		return delegate.zero();
 	}
 
 	@Override
 	public PriceType add(final PriceType left, final PriceType right)
 	{
-		return arithmetic.add(left, right);
+		return delegate.add(left, right);
 	}
 
 	private PriceArithmetic(final QuotingConvention leftQuotingConvention,
 	                        final QuotingConvention rightQuotingConvention)
 	{
-		this.arithmetic =
+		this.delegate =
 				QuotingConventionAwareArithmetic.of(leftQuotingConvention, rightQuotingConvention, PriceType::value,
 						PriceTypeFactory::priceOf);
 	}

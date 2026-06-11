@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.quoting;
 
-public interface QuotingConvention<U extends QuotingConventionUnit>
+public interface QuotingConvention<U extends QuotingUnit>
 {
 	U unit();
 

@@ -1,7 +1,7 @@
 package de.gupta.metis.core.types.arithmetic;
 
 import de.gupta.commons.utility.math.algebra.structure.binary.notation.additive.AdditiveAbelianGroupStructure;
-import de.gupta.metis.core.types.quoting.QuotingConvention;
+import de.gupta.metis.core.types.quoting.SizeQuotingConvention;
 import de.gupta.metis.core.types.size.SizeType;
 import de.gupta.metis.core.types.size.SizeTypeFactory;
 
@@ -9,15 +9,14 @@ public final class SizeArithmetic implements AdditiveAbelianGroupStructure<SizeT
 {
 	private final QuotingConventionAwareArithmetic<SizeType> delegate;
 
-	public static SizeArithmetic of(final QuotingConvention quotingConvention)
+	public static SizeArithmetic of(final SizeQuotingConvention<?> convention)
 	{
-		return of(quotingConvention, quotingConvention);
+		return of(convention, convention);
 	}
 
-	public static SizeArithmetic of(final QuotingConvention leftQuotingConvention,
-	                                final QuotingConvention rightQuotingConvention)
+	public static SizeArithmetic of(final SizeQuotingConvention<?> left, final SizeQuotingConvention<?> right)
 	{
-		return new SizeArithmetic(leftQuotingConvention, rightQuotingConvention);
+		return new SizeArithmetic(left, right);
 	}
 
 	@Override
@@ -38,11 +37,8 @@ public final class SizeArithmetic implements AdditiveAbelianGroupStructure<SizeT
 		return delegate.add(left, right);
 	}
 
-	private SizeArithmetic(final QuotingConvention leftQuotingConvention,
-	                       final QuotingConvention rightQuotingConvention)
+	private SizeArithmetic(final SizeQuotingConvention<?> left, final SizeQuotingConvention<?> right)
 	{
-		this.delegate =
-				QuotingConventionAwareArithmetic.of(leftQuotingConvention, rightQuotingConvention, SizeType::value,
-						SizeTypeFactory::sizeOf);
+		this.delegate = QuotingConventionAwareArithmetic.of(left, right, SizeType::value, SizeTypeFactory::sizeOf);
 	}
 }

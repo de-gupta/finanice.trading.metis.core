@@ -1,8 +1,13 @@
 package de.gupta.metis.core.types.quoting;
 
-public enum PriceQuotingUnit implements QuotingUnit, VariableScaleQuotingUnit
+public sealed interface PriceQuotingUnit extends QuotingUnit
+		permits PriceQuotingUnit.Ticks, PriceQuotingUnit.ThirtySeconds, CurrencyPriceUnit
 {
-	TICKS,
-	CURRENCY,
-	THIRTY_SECONDS
+	record Ticks() implements PriceQuotingUnit, VariableScaleQuotingUnit
+	{
+	}
+
+	record ThirtySeconds() implements PriceQuotingUnit, VariableScaleQuotingUnit
+	{
+	}
 }

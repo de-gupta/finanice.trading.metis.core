@@ -11,15 +11,16 @@ import java.util.function.Function;
 
 final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements AdditiveAbelianGroupStructure<E>
 {
-	private final QuotingConvention leftQuotingConvention;
-	private final QuotingConvention rightQuotingConvention;
+	private final QuotingConvention<?> leftQuotingConvention;
+	private final QuotingConvention<?> rightQuotingConvention;
 	private final Function<E, TradingNumber> extractor;
 	private final Function<TradingNumber, E> factory;
 
-	public static <E extends Zero<E>> QuotingConventionAwareArithmetic<E> of(QuotingConvention leftQuotingConvention,
-	                                                                         QuotingConvention rightQuotingConvention,
-	                                                                         Function<E, TradingNumber> extractor,
-	                                                                         Function<TradingNumber, E> factory)
+	static <E extends Zero<E>> QuotingConventionAwareArithmetic<E> of(
+			final QuotingConvention<?> leftQuotingConvention,
+			final QuotingConvention<?> rightQuotingConvention,
+			final Function<E, TradingNumber> extractor,
+			final Function<TradingNumber, E> factory)
 	{
 		return new QuotingConventionAwareArithmetic<>(leftQuotingConvention, rightQuotingConvention, extractor,
 				factory);
@@ -39,7 +40,7 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 		                .metamorphose(l -> scale(l, rightQuotingConvention.scale()).add(extractor.apply(right)))
 		                .metamorphose(factory)
 		                .decree(() -> new IllegalArgumentException(
-								"Cannot add sizes with incompatible quoting conventions: " + leftQuotingConvention + " and " + rightQuotingConvention));
+								"Incompatible quoting conventions: " + leftQuotingConvention + " and " + rightQuotingConvention));
 	}
 
 	@Override
@@ -48,13 +49,13 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 		return factory.apply(TradingNumberFactory.zero());
 	}
 
-	private TradingNumber scale(final E size, int scale)
+	private TradingNumber scale(final E element, final int scale)
 	{
-		return extractor.apply(size).multiply(TradingNumberFactory.of(scale));
+		return extractor.apply(element).multiply(TradingNumberFactory.of(scale));
 	}
 
-	private QuotingConventionAwareArithmetic(final QuotingConvention leftQuotingConvention,
-	                                         final QuotingConvention rightQuotingConvention,
+	private QuotingConventionAwareArithmetic(final QuotingConvention<?> leftQuotingConvention,
+	                                         final QuotingConvention<?> rightQuotingConvention,
 	                                         final Function<E, TradingNumber> extractor,
 	                                         final Function<TradingNumber, E> factory)
 	{

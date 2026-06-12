@@ -1,13 +1,14 @@
 package de.gupta.metis.core.types.quoting;
 
-public sealed interface QuotingConvention permits PriceQuotingConvention, SizeQuotingConvention
+public sealed interface QuotingConvention<U extends QuotingUnit>
+		permits PriceQuotingConvention, SizeQuotingConvention
 {
-	QuotingUnit unit();
+	U unit();
 
 	int scale();
 
-	default boolean isCompatibleWith(final QuotingConvention other)
+	default boolean isCompatibleWith(final QuotingConvention<?> other)
 	{
-		return this.unit() == other.unit();
+		return unit().equals(other.unit());
 	}
 }

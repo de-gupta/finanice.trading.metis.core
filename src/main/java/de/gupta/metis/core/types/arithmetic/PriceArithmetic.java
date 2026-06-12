@@ -3,21 +3,20 @@ package de.gupta.metis.core.types.arithmetic;
 import de.gupta.commons.utility.math.algebra.structure.binary.notation.additive.AdditiveAbelianGroupStructure;
 import de.gupta.metis.core.types.price.PriceType;
 import de.gupta.metis.core.types.price.PriceTypeFactory;
-import de.gupta.metis.core.types.quoting.QuotingConvention;
+import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
 
 public final class PriceArithmetic implements AdditiveAbelianGroupStructure<PriceType>
 {
 	private final QuotingConventionAwareArithmetic<PriceType> delegate;
 
-	public static PriceArithmetic of(final QuotingConvention quotingConvention)
+	public static PriceArithmetic of(final PriceQuotingConvention<?> convention)
 	{
-		return of(quotingConvention, quotingConvention);
+		return of(convention, convention);
 	}
 
-	public static PriceArithmetic of(final QuotingConvention leftQuotingConvention,
-	                                 final QuotingConvention rightQuotingConvention)
+	public static PriceArithmetic of(final PriceQuotingConvention<?> left, final PriceQuotingConvention<?> right)
 	{
-		return new PriceArithmetic(leftQuotingConvention, rightQuotingConvention);
+		return new PriceArithmetic(left, right);
 	}
 
 	@Override
@@ -38,11 +37,8 @@ public final class PriceArithmetic implements AdditiveAbelianGroupStructure<Pric
 		return delegate.add(left, right);
 	}
 
-	private PriceArithmetic(final QuotingConvention leftQuotingConvention,
-	                        final QuotingConvention rightQuotingConvention)
+	private PriceArithmetic(final PriceQuotingConvention<?> left, final PriceQuotingConvention<?> right)
 	{
-		this.delegate =
-				QuotingConventionAwareArithmetic.of(leftQuotingConvention, rightQuotingConvention, PriceType::value,
-						PriceTypeFactory::priceOf);
+		this.delegate = QuotingConventionAwareArithmetic.of(left, right, PriceType::value, PriceTypeFactory::priceOf);
 	}
 }

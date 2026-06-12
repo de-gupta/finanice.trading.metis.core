@@ -39,6 +39,6 @@ public final class PriceArithmetic implements AdditiveAbelianGroupStructure<Pric
 
 	private PriceArithmetic(final PriceQuotingConvention<?> left, final PriceQuotingConvention<?> right)
 	{
-		this.delegate = QuotingConventionAwareArithmetic.of(left, right, PriceType::value, PriceTypeFactory::priceOf);
+		this.delegate = QuotingConventionAwareArithmetic.of(left, right, PriceType::value, PriceTypeFactory::of);
 	}
 }

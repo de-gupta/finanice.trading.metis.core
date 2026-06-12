@@ -39,6 +39,6 @@ public final class SizeArithmetic implements AdditiveAbelianGroupStructure<SizeT
 
 	private SizeArithmetic(final SizeQuotingConvention<?> left, final SizeQuotingConvention<?> right)
 	{
-		this.delegate = QuotingConventionAwareArithmetic.of(left, right, SizeType::value, SizeTypeFactory::sizeOf);
+		this.delegate = QuotingConventionAwareArithmetic.of(left, right, SizeType::value, SizeTypeFactory::of);
 	}
 }

@@ -10,6 +10,8 @@ module de.gupta.metis.core
 	exports de.gupta.metis.core.types.money;
 	exports de.gupta.metis.core.types.arithmetic;
 
+	exports de.gupta.metis.core.types.exception;
+
 	requires de.gupta.athena;
 	requires de.gupta.aletheia;
 }

@@ -6,7 +6,7 @@ public interface FixedScaleQuotingUnit
 
 	enum FixedScaleQuotingUnits implements FixedScaleQuotingUnit
 	{
-		BASIS_POINT(10^-4);
+		BASIS_POINT(4);
 
 		private final int scale;
 

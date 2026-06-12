@@ -7,15 +7,15 @@ public final class SizeTypeFactory
 {
 	public static SizeType zero()
 	{
-		return sizeOf(0);
+		return of(0);
 	}
 
-	public static SizeType sizeOf(final long value)
+	public static SizeType of(final long value)
 	{
-		return sizeOf(TradingNumberFactory.of(value));
+		return of(TradingNumberFactory.of(value));
 	}
 
-	public static SizeType sizeOf(final TradingNumber value)
+	public static SizeType of(final TradingNumber value)
 	{
 		return SizeTypeImpl.of(value);
 	}

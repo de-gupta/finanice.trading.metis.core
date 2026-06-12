@@ -3,6 +3,7 @@ package de.gupta.metis.core.types.arithmetic;
 import de.gupta.aletheia.functional.Unfolding;
 import de.gupta.commons.utility.math.algebra.element.binary.notation.additive.Zero;
 import de.gupta.commons.utility.math.algebra.structure.binary.notation.additive.AdditiveAbelianGroupStructure;
+import de.gupta.metis.core.types.exception.IncompatibleInputException;
 import de.gupta.metis.core.types.number.TradingNumber;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
 import de.gupta.metis.core.types.quoting.QuotingConvention;
@@ -39,8 +40,8 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 		                .discern(_ -> leftQuotingConvention.isCompatibleWith(rightQuotingConvention))
 		                .metamorphose(l -> scale(l, rightQuotingConvention.scale()).add(extractor.apply(right)))
 		                .metamorphose(factory)
-		                .decree(() -> new IllegalArgumentException(
-								"Incompatible quoting conventions: " + leftQuotingConvention + " and " + rightQuotingConvention));
+		                .decree(IncompatibleInputException.from(
+				                "Incompatible quoting conventions: " + leftQuotingConvention + " and " + rightQuotingConvention));
 	}
 
 	@Override

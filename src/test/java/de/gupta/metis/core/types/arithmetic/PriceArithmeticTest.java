@@ -1,6 +1,7 @@
 package de.gupta.metis.core.types.arithmetic;
 
 import de.gupta.commons.utility.comparison.ComparisonResult;
+import de.gupta.metis.core.types.currency.Currency;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
 import de.gupta.metis.core.types.price.PriceTypeFactory;
 import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
@@ -161,6 +162,21 @@ final class PriceArithmeticTest
 					.as("price(750) + zero(any scale) = price(750)")
 					.isEqualTo(ComparisonResult.EQUAL);
 		}
+
+		@Test
+		@DisplayName("normalizes left up to right scale when right is more precise")
+		void normalizesLeftUpToRightScaleWhenRightIsMorePrecise()
+		{
+			var leftConvention = PriceQuotingConvention.ticks(2);
+			var rightConvention = PriceQuotingConvention.ticks(3);
+			var arithmetic = PriceArithmetic.of(leftConvention, rightConvention);
+
+			var result = arithmetic.add(PriceTypeFactory.of(45), PriceTypeFactory.of(450));
+
+			assertThat(result.value().compare(PriceTypeFactory.of(900).value()))
+					.as("price(45, scale=2) + price(450, scale=3): left normalized ×10 → 450 + 450 = 900 at scale 3")
+					.isEqualTo(ComparisonResult.EQUAL);
+		}
 	}
 
 	@Nested
@@ -185,6 +201,12 @@ final class PriceArithmeticTest
 									PriceQuotingConvention.thirtySeconds(2))),
 					new IncompatibleCase("thirty-seconds vs ticks",
 							PriceArithmetic.of(PriceQuotingConvention.thirtySeconds(2),
+									PriceQuotingConvention.ticks(2))),
+					new IncompatibleCase("ticks vs currency",
+							PriceArithmetic.of(PriceQuotingConvention.ticks(2),
+									PriceQuotingConvention.currency(Currency.USD.INSTANCE))),
+					new IncompatibleCase("currency vs ticks",
+							PriceArithmetic.of(PriceQuotingConvention.currency(Currency.USD.INSTANCE),
 									PriceQuotingConvention.ticks(2)))
 			).map(tc -> Arguments.of(tc.as(), tc));
 		}
@@ -291,6 +313,35 @@ final class PriceArithmeticTest
 			assertThat(arith0.zero().value().compare(arith5.zero().value()))
 					.as("zero at scale 0 and zero at scale 5 both have raw value zero")
 					.isEqualTo(ComparisonResult.EQUAL);
+		}
+	}
+
+	@Nested
+	@DisplayName("when arithmetic overflows")
+	final class WhenArithmeticOverflows
+	{
+		private final PriceArithmetic arithmetic = PriceArithmetic.of(PriceQuotingConvention.ticks(0));
+
+		@Test
+		@DisplayName("add throws when the sum overflows long")
+		void addThrowsWhenTheSumOverflowsLong()
+		{
+			var nearMax = PriceTypeFactory.of(Long.MAX_VALUE / 2 + 1);
+
+			assertThatThrownBy(() -> arithmetic.add(nearMax, nearMax))
+					.as("adding two values whose sum exceeds Long.MAX_VALUE should throw")
+					.isInstanceOf(ArithmeticException.class);
+		}
+
+		@Test
+		@DisplayName("negate throws for Long.MIN_VALUE")
+		void negateThrowsForLongMinValue()
+		{
+			var minValue = PriceTypeFactory.of(Long.MIN_VALUE);
+
+			assertThatThrownBy(() -> arithmetic.negate(minValue))
+					.as("negating Long.MIN_VALUE overflows because Math.abs(Long.MIN_VALUE) > Long.MAX_VALUE")
+					.isInstanceOf(ArithmeticException.class);
 		}
 	}
 }

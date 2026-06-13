@@ -36,14 +36,20 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 	@Override
 	public E add(final E left, final E right)
 	{
-		return Unfolding.beckon(right)
+		final TradingNumber leftRaw = extractor.apply(left);
+
+		return Unfolding.beckon(extractor.apply(right))
 		                .discern(_ -> leftQuotingConvention.isCompatibleWith(rightQuotingConvention))
-		                .cleave(_ -> leftQuotingConvention.hasSameScale(rightQuotingConvention),
-								extractor,
-								r -> extractor.apply(r).multiply(TradingNumberFactory.of(
-										pow10(leftQuotingConvention.scaleDifference(rightQuotingConvention))))
+		                .wield(
+								_ -> leftQuotingConvention.scaleDifference(rightQuotingConvention),
+								(rightRaw, diff) -> rightRaw.cleave(
+										_ -> diff > 0,
+										r -> r.multiply(TradingNumberFactory.of(pow10(diff))).add(leftRaw),
+										r -> diff < 0
+												? leftRaw.multiply(TradingNumberFactory.of(pow10(-diff))).add(r)
+												: leftRaw.add(r)
+								)
 						)
-		                .metamorphose(r -> r.add(extractor.apply(left)))
 		                .metamorphose(factory)
 		                .decree(IncompatibleInputException.from(
 								"Incompatible quoting conventions: " + leftQuotingConvention + " and " + rightQuotingConvention));

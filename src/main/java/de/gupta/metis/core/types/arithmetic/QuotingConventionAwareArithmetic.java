@@ -36,12 +36,17 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 	@Override
 	public E add(final E left, final E right)
 	{
-		return Unfolding.beckon(left)
+		return Unfolding.beckon(right)
 		                .discern(_ -> leftQuotingConvention.isCompatibleWith(rightQuotingConvention))
-		                .metamorphose(l -> scale(l, rightQuotingConvention.scale()).add(extractor.apply(right)))
+		                .cleave(_ -> leftQuotingConvention.hasSameScale(rightQuotingConvention),
+								extractor,
+								r -> extractor.apply(r).multiply(TradingNumberFactory.of(
+										pow10(leftQuotingConvention.scaleDifference(rightQuotingConvention))))
+						)
+		                .metamorphose(r -> r.multiply(extractor.apply(left)))
 		                .metamorphose(factory)
 		                .decree(IncompatibleInputException.from(
-				                "Incompatible quoting conventions: " + leftQuotingConvention + " and " + rightQuotingConvention));
+								"Incompatible quoting conventions: " + leftQuotingConvention + " and " + rightQuotingConvention));
 	}
 
 	@Override
@@ -50,9 +55,11 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 		return factory.apply(TradingNumberFactory.zero());
 	}
 
-	private TradingNumber scale(final E element, final int scale)
+	private static long pow10(final int n)
 	{
-		return extractor.apply(element).multiply(TradingNumberFactory.of(scale));
+		long result = 1;
+		for (int i = 0; i < n; i++) result = Math.multiplyExact(result, 10L);
+		return result;
 	}
 
 	private QuotingConventionAwareArithmetic(final QuotingConvention<?> leftQuotingConvention,

@@ -11,4 +11,14 @@ public sealed interface QuotingConvention<U extends QuotingUnit>
 	{
 		return unit().equals(other.unit());
 	}
+
+	default int scaleDifference(final QuotingConvention<?> other)
+	{
+		return scale() - other.scale();
+	}
+
+	default boolean hasSameScale(final QuotingConvention<?> other)
+	{
+		return scaleDifference(other) == 0;
+	}
 }

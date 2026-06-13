@@ -43,16 +43,13 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 	@Override
 	public E add(final E left, final E right)
 	{
-		return factory.apply(
-				operateRespectingScale(extractor.apply(left), extractor.apply(right), TradingNumber::add)
-		);
+		return factory.apply(scaleAndApply(extractor.apply(left), extractor.apply(right), TradingNumber::add));
 	}
 
 	@Override
 	public ComparisonResult compare(final E left, final E right)
 	{
-		return operateRespectingScale(extractor.apply(left), extractor.apply(right),
-				TradingNumber::compare);
+		return scaleAndApply(extractor.apply(left), extractor.apply(right), TradingNumber::compare);
 	}
 
 	@Override
@@ -61,6 +58,17 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 		return factory.apply(TradingNumberFactory.zero());
 	}
 
+	private <R> R scaleAndApply(
+			final TradingNumber left, final TradingNumber right,
+			final BiFunction<TradingNumber, TradingNumber, R> operation)
+	{
+		if (scaleDifference > 0) return operation.apply(left, right.multiply(scaleFactor(scaleDifference)));
+		if (scaleDifference < 0) return operation.apply(left.multiply(scaleFactor(-scaleDifference)), right);
+		return operation.apply(left, right);
+	}
+
+	@SuppressWarnings("unused")
+	// Alternative elegant implementation of scaleAndApply
 	private <R> R operateRespectingScale(
 			final TradingNumber left, final TradingNumber right,
 			final BiFunction<TradingNumber, TradingNumber, R> operation)

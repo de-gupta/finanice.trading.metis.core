@@ -108,18 +108,16 @@ final class PriceArithmeticCompareTest
 	}
 
 	@Nested
-	@DisplayName("when comparing prices with incompatible conventions")
-	final class WhenComparingWithIncompatibleConventions
+	@DisplayName("when constructing with incompatible conventions")
+	final class WhenConstructingWithIncompatibleConventions
 	{
 		@Test
 		@DisplayName("throws for mismatched unit kinds")
 		void throwsForMismatchedUnitKinds()
 		{
-			var arithmetic = PriceArithmetic.of(
-					PriceQuotingConvention.ticks(2), PriceQuotingConvention.thirtySeconds(2));
-
-			assertThatThrownBy(() -> arithmetic.compare(PriceTypeFactory.of(100), PriceTypeFactory.of(50)))
-					.as("comparing ticks price to thirty-seconds price should be rejected")
+			assertThatThrownBy(() -> PriceArithmetic.of(
+					PriceQuotingConvention.ticks(2), PriceQuotingConvention.thirtySeconds(2)))
+					.as("constructing arithmetic with ticks and thirty-seconds conventions should be rejected")
 					.isInstanceOf(RuntimeException.class);
 		}
 	}

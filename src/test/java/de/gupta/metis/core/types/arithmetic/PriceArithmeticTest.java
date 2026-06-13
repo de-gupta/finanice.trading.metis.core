@@ -180,15 +180,15 @@ final class PriceArithmeticTest
 	}
 
 	@Nested
-	@DisplayName("when adding prices with incompatible conventions")
-	final class WhenAddingPricesWithIncompatibleConventions
+	@DisplayName("when constructing with incompatible conventions")
+	final class WhenConstructingWithIncompatibleConventions
 	{
 		@ParameterizedTest(name = "{0}")
 		@MethodSource("throwsForMismatchedUnitKindsCases")
 		@DisplayName("throws for mismatched unit kinds")
 		void throwsForMismatchedUnitKinds(final String as, final IncompatibleCase tc)
 		{
-			assertThatThrownBy(() -> tc.arithmetic().add(PriceTypeFactory.of(100), PriceTypeFactory.of(50)))
+			assertThatThrownBy(() -> PriceArithmetic.of(tc.left(), tc.right()))
 					.as(as)
 					.isInstanceOf(RuntimeException.class);
 		}
@@ -197,21 +197,17 @@ final class PriceArithmeticTest
 		{
 			return Stream.of(
 					new IncompatibleCase("ticks vs thirty-seconds",
-							PriceArithmetic.of(PriceQuotingConvention.ticks(2),
-									PriceQuotingConvention.thirtySeconds(2))),
+							PriceQuotingConvention.ticks(2), PriceQuotingConvention.thirtySeconds(2)),
 					new IncompatibleCase("thirty-seconds vs ticks",
-							PriceArithmetic.of(PriceQuotingConvention.thirtySeconds(2),
-									PriceQuotingConvention.ticks(2))),
+							PriceQuotingConvention.thirtySeconds(2), PriceQuotingConvention.ticks(2)),
 					new IncompatibleCase("ticks vs currency",
-							PriceArithmetic.of(PriceQuotingConvention.ticks(2),
-									PriceQuotingConvention.currency(Currency.USD.INSTANCE))),
+							PriceQuotingConvention.ticks(2), PriceQuotingConvention.currency(Currency.USD.INSTANCE)),
 					new IncompatibleCase("currency vs ticks",
-							PriceArithmetic.of(PriceQuotingConvention.currency(Currency.USD.INSTANCE),
-									PriceQuotingConvention.ticks(2)))
+							PriceQuotingConvention.currency(Currency.USD.INSTANCE), PriceQuotingConvention.ticks(2))
 			).map(tc -> Arguments.of(tc.as(), tc));
 		}
 
-		private record IncompatibleCase(String as, PriceArithmetic arithmetic)
+		private record IncompatibleCase(String as, PriceQuotingConvention<?> left, PriceQuotingConvention<?> right)
 		{
 		}
 	}

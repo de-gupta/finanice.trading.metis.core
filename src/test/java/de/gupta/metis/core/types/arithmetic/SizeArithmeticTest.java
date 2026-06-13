@@ -148,15 +148,15 @@ final class SizeArithmeticTest
 	}
 
 	@Nested
-	@DisplayName("when adding sizes with incompatible conventions")
-	final class WhenAddingWithIncompatibleConventions
+	@DisplayName("when constructing with incompatible conventions")
+	final class WhenConstructingWithIncompatibleConventions
 	{
 		@ParameterizedTest(name = "{0}")
 		@MethodSource("throwsForMismatchedUnitKindsCases")
 		@DisplayName("throws for mismatched unit kinds")
-		void throwsForMismatchedUnitKinds(final String as, final SizeArithmetic arithmetic)
+		void throwsForMismatchedUnitKinds(final String as, final IncompatibleCase tc)
 		{
-			assertThatThrownBy(() -> arithmetic.add(SizeTypeFactory.of(10), SizeTypeFactory.of(5)))
+			assertThatThrownBy(() -> SizeArithmetic.of(tc.left(), tc.right()))
 					.as(as)
 					.isInstanceOf(RuntimeException.class);
 		}
@@ -164,13 +164,17 @@ final class SizeArithmeticTest
 		private static Stream<Arguments> throwsForMismatchedUnitKindsCases()
 		{
 			return Stream.of(
-					Arguments.of("units vs lots",
-							SizeArithmetic.of(SizeQuotingConvention.units(0), SizeQuotingConvention.lots(0))),
-					Arguments.of("units vs contracts",
-							SizeArithmetic.of(SizeQuotingConvention.units(0), SizeQuotingConvention.contracts(0))),
-					Arguments.of("lots vs contracts",
-							SizeArithmetic.of(SizeQuotingConvention.lots(0), SizeQuotingConvention.contracts(0)))
-			);
+					new IncompatibleCase("units vs lots",
+							SizeQuotingConvention.units(0), SizeQuotingConvention.lots(0)),
+					new IncompatibleCase("units vs contracts",
+							SizeQuotingConvention.units(0), SizeQuotingConvention.contracts(0)),
+					new IncompatibleCase("lots vs contracts",
+							SizeQuotingConvention.lots(0), SizeQuotingConvention.contracts(0))
+			).map(tc -> Arguments.of(tc.as(), tc));
+		}
+
+		private record IncompatibleCase(String as, SizeQuotingConvention<?> left, SizeQuotingConvention<?> right)
+		{
 		}
 	}
 

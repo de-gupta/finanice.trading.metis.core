@@ -93,17 +93,15 @@ final class SizeArithmeticCompareTest
 	}
 
 	@Nested
-	@DisplayName("when comparing sizes with incompatible conventions")
-	final class WhenComparingWithIncompatibleConventions
+	@DisplayName("when constructing with incompatible conventions")
+	final class WhenConstructingWithIncompatibleConventions
 	{
 		@Test
 		@DisplayName("throws for mismatched unit kinds")
 		void throwsForMismatchedUnitKinds()
 		{
-			var arithmetic = SizeArithmetic.of(SizeQuotingConvention.units(0), SizeQuotingConvention.lots(0));
-
-			assertThatThrownBy(() -> arithmetic.compare(SizeTypeFactory.of(10), SizeTypeFactory.of(5)))
-					.as("comparing units size to lots size should be rejected")
+			assertThatThrownBy(() -> SizeArithmetic.of(SizeQuotingConvention.units(0), SizeQuotingConvention.lots(0)))
+					.as("constructing arithmetic with units and lots conventions should be rejected")
 					.isInstanceOf(RuntimeException.class);
 		}
 	}

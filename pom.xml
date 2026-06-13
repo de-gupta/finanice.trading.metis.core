@@ -15,9 +15,8 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <scm>
-        <connection>scm:git:ssh://git@github.com/de-gupta/metis.core.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/de-gupta/metis.core.git</developerConnection>
-        <url>https://github.com/de-gupta/metis.core.git</url>
+        <developerConnection>scm:git:ssh://git@github.com/de-gupta/finance.trading.metis.core.types.git</developerConnection>
+        <url>https://github.com/de-gupta/finance.trading.metis.core.types.git</url>
         <tag>HEAD</tag>
     </scm>
 

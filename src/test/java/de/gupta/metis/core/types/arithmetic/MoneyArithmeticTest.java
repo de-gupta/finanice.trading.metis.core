@@ -27,16 +27,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("MoneyArithmetic")
 final class MoneyArithmeticTest
 {
-	// ── helpers ──────────────────────────────────────────────────────────────
-
 	private static void assertMoneyEquals(final String as, final MoneyType<?> actual, final MoneyType<?> expected)
 	{
-		assertThat(actual.value().compare(expected.value())).as("%s — monetary value", as)
-		                                                    .isEqualTo(ComparisonResult.EQUAL);
-		assertThat(actual.currency()).as("%s — currency", as).isSameAs(expected.currency());
+		assertThat(actual.value().compare(expected.value()))
+				.as("%s — monetary value", as)
+				.isEqualTo(ComparisonResult.EQUAL);
+		assertThat(actual.currency())
+				.as("%s — currency", as)
+				.isSameAs(expected.currency());
 	}
-
-	// ── USD whole-unit size — core arithmetic ─────────────────────────────
 
 	@Nested
 	@DisplayName("when multiplying a USD price by a whole-unit size")
@@ -47,7 +46,7 @@ final class MoneyArithmeticTest
 		private final SizeQuotingConvention<SizeQuotingUnit.Units> sizeConvention = SizeQuotingConvention.units(0);
 
 		@ParameterizedTest(name = "{0}")
-		@MethodSource("multiplyCases")
+		@MethodSource("returnsMoneyEqualToPriceTimesSizeCases")
 		@DisplayName("returns money equal to price × size")
 		void returnsMoneyEqualToPriceTimesSize(final String as, final UsdWholeUnitCase tc)
 		{
@@ -56,32 +55,34 @@ final class MoneyArithmeticTest
 			assertMoneyEquals(as, result, tc.expected());
 		}
 
-		private static Stream<Arguments> multiplyCases()
+		private static Stream<Arguments> returnsMoneyEqualToPriceTimesSizeCases()
 		{
-			return Stream.of(UsdWholeUnitCase.of("price(100) × size(5) = money(500)", 100L, 5L, 500L),
-								 UsdWholeUnitCase.of("price(1) × size(1) = money(1)", 1L, 1L, 1L),
-								 UsdWholeUnitCase.of("zero size yields zero money", 5000L, 0L, 0L),
-								 UsdWholeUnitCase.of("zero price yields zero money", 0L, 100L, 0L),
-								 UsdWholeUnitCase.of("negative price (short sell) yields negative money", -4500L, 10L, -45000L),
-								 UsdWholeUnitCase.of("negative size (short position) yields negative money", 4500L, -10L, -45000L),
-								 UsdWholeUnitCase.of("both negative yields positive money", -4500L, -10L, 45000L),
-								 UsdWholeUnitCase.of("single cent × single unit", 1L, 1L, 1L),
-								 UsdWholeUnitCase.of("large price × large size", 1_000_000L, 100L, 100_000_000L),
-								 UsdWholeUnitCase.of("large lot count", 200L, 10_000L, 2_000_000L))
-			             .map(tc -> Arguments.of(tc.as(), tc));
+			return Stream.of(
+					UsdWholeUnitCase.of("price(100) × size(5) = money(500)", 100L, 5L, 500L),
+					UsdWholeUnitCase.of("price(1) × size(1) = money(1)", 1L, 1L, 1L),
+					UsdWholeUnitCase.of("zero size yields zero money", 5000L, 0L, 0L),
+					UsdWholeUnitCase.of("zero price yields zero money", 0L, 100L, 0L),
+					UsdWholeUnitCase.of("negative price (short sell) yields negative money", -4500L, 10L, -45000L),
+					UsdWholeUnitCase.of("negative size (short position) yields negative money", 4500L, -10L, -45000L),
+					UsdWholeUnitCase.of("both negative yields positive money", -4500L, -10L, 45000L),
+					UsdWholeUnitCase.of("single cent × single unit", 1L, 1L, 1L),
+					UsdWholeUnitCase.of("large price × large size", 1_000_000L, 100L, 100_000_000L),
+					UsdWholeUnitCase.of("large lot count", 200L, 10_000L, 2_000_000L)
+			).map(tc -> Arguments.of(tc.as(), tc));
 		}
 
 		private record UsdWholeUnitCase(String as, PriceType price, SizeType size, MoneyType<Currency.USD> expected)
 		{
 			static UsdWholeUnitCase of(final String as, final long priceRaw, final long sizeRaw, final long expectedRaw)
 			{
-				return new UsdWholeUnitCase(as, PriceTypeFactory.of(priceRaw), SizeTypeFactory.of(sizeRaw),
+				return new UsdWholeUnitCase(
+						as,
+						PriceTypeFactory.of(priceRaw),
+						SizeTypeFactory.of(sizeRaw),
 						MoneyTypeFactory.of(TradingNumberFactory.of(expectedRaw), Currency.USD.INSTANCE));
 			}
 		}
 	}
-
-	// ── fractional size scale — BTC/USD ──────────────────────────────────
 
 	@Nested
 	@DisplayName("when multiplying with fractional size scale")
@@ -91,7 +92,7 @@ final class MoneyArithmeticTest
 				PriceQuotingConvention.currency(Currency.USD.INSTANCE);
 
 		@ParameterizedTest(name = "{0}")
-		@MethodSource("btcSizeCases")
+		@MethodSource("dividesRawProductByTenToThePowerOfSizeScaleCases")
 		@DisplayName("divides raw product by ten to the power of size scale")
 		void dividesRawProductByTenToThePowerOfSizeScale(final String as, final long priceRaw, final long sizeRaw,
 		                                                 final int sizeScale, final long expectedMoneyRaw)
@@ -99,31 +100,24 @@ final class MoneyArithmeticTest
 			var sizeConvention = SizeQuotingConvention.units(sizeScale);
 			var expected = MoneyTypeFactory.of(TradingNumberFactory.of(expectedMoneyRaw), Currency.USD.INSTANCE);
 
-			var result = MoneyArithmetic.multiply(PriceTypeFactory.of(priceRaw), SizeTypeFactory.of(sizeRaw),
-					priceConvention, sizeConvention);
+			var result = MoneyArithmetic.multiply(
+					PriceTypeFactory.of(priceRaw), SizeTypeFactory.of(sizeRaw), priceConvention, sizeConvention);
 
 			assertMoneyEquals(as, result, expected);
 		}
 
-		private static Stream<Arguments> btcSizeCases()
+		private static Stream<Arguments> dividesRawProductByTenToThePowerOfSizeScaleCases()
 		{
 			return Stream.of(
-					// price=$45,000 (4500000 cents) × 1 BTC (10^8 satoshis) = $45,000 (4500000 cents)
-					Arguments.of("$45,000 × 1 BTC = $45,000", 4500000L, 100_000_000L, 8, 4500000L),
-					// price=$45,000 (4500000 cents) × 2.5 BTC (250000000 satoshis) = $112,500 (11250000 cents)
-					Arguments.of("$45,000 × 2.5 BTC = $112,500", 4500000L, 250_000_000L, 8, 11250000L),
-					// price=$1 (100 cents) × 0.5 BTC (50000000 satoshis) = $0.50 (50 cents)
-					Arguments.of("$1.00 × 0.5 BTC = $0.50", 100L, 50_000_000L, 8, 50L),
-					// price=$100 (10000 cents) × 10 units at scale 2 (1000 hundredths) = $1,000 (100000 cents)
-					Arguments.of("$100.00 × 10 units (scale 2) = $1,000", 10000L, 1000L, 2, 100000L),
-					// zero BTC always yields zero money
-					Arguments.of("any price × zero BTC = zero money", 4500000L, 0L, 8, 0L),
-					// negative size (short BTC)
-					Arguments.of("$45,000 × -1 BTC = -$45,000", 4500000L, -100_000_000L, 8, -4500000L));
+					Arguments.of("$45,000 × 1 BTC (scale 8) = $45,000", 4500000L, 100_000_000L, 8, 4500000L),
+					Arguments.of("$45,000 × 2.5 BTC (scale 8) = $112,500", 4500000L, 250_000_000L, 8, 11250000L),
+					Arguments.of("$1.00 × 0.5 BTC (scale 8) = $0.50", 100L, 50_000_000L, 8, 50L),
+					Arguments.of("$100.00 × 10.00 units (scale 2) = $1,000", 10000L, 1000L, 2, 100000L),
+					Arguments.of("any price × zero BTC (scale 8) = zero money", 4500000L, 0L, 8, 0L),
+					Arguments.of("$45,000 × -1 BTC (scale 8) = -$45,000", 4500000L, -100_000_000L, 8, -4500000L)
+			);
 		}
 	}
-
-	// ── JPY (scale 0) ─────────────────────────────────────────────────────
 
 	@Nested
 	@DisplayName("when multiplying in JPY (zero decimal places)")
@@ -134,31 +128,30 @@ final class MoneyArithmeticTest
 		private final SizeQuotingConvention<SizeQuotingUnit.Units> sizeConvention = SizeQuotingConvention.units(0);
 
 		@ParameterizedTest(name = "{0}")
-		@MethodSource("jpyCases")
+		@MethodSource("returnsYenNotionalWithNoDecimalDivisionCases")
 		@DisplayName("returns yen notional with no decimal division")
 		void returnsYenNotionalWithNoDecimalDivision(final String as, final long priceRaw, final long sizeRaw,
 		                                             final long expectedYen)
 		{
 			var expected = MoneyTypeFactory.of(TradingNumberFactory.of(expectedYen), Currency.JPY.INSTANCE);
 
-			var result = MoneyArithmetic.multiply(PriceTypeFactory.of(priceRaw), SizeTypeFactory.of(sizeRaw),
-					priceConvention, sizeConvention);
+			var result = MoneyArithmetic.multiply(
+					PriceTypeFactory.of(priceRaw), SizeTypeFactory.of(sizeRaw), priceConvention, sizeConvention);
 
 			assertMoneyEquals(as, result, expected);
 		}
 
-		private static Stream<Arguments> jpyCases()
+		private static Stream<Arguments> returnsYenNotionalWithNoDecimalDivisionCases()
 		{
-			return Stream.of(Arguments.of("¥150 × 100 shares = ¥15,000", 150L, 100L, 15000L),
-					Arguments.of("¥3000 × 0 shares = ¥0", 3000L, 0L, 0L), Arguments.of("¥1 × 1 share = ¥1", 1L, 1L, 1L),
+			return Stream.of(
+					Arguments.of("¥150 × 100 shares = ¥15,000", 150L, 100L, 15000L),
+					Arguments.of("¥3,000 × 0 shares = ¥0", 3000L, 0L, 0L),
+					Arguments.of("¥1 × 1 share = ¥1", 1L, 1L, 1L),
 					Arguments.of("short: -¥150 × 100 shares = -¥15,000", -150L, 100L, -15000L),
-					Arguments.of("large institutional: ¥5000 × 10,000 shares = ¥50,000,000", 5000L, 10_000L,
-							50_000_000L));
+					Arguments.of("¥5,000 × 10,000 shares = ¥50,000,000", 5000L, 10_000L, 50_000_000L)
+			);
 		}
 	}
-
-	// ── currency propagation ──────────────────────────────────────────────
-	// Each currency needs its own method — the specific C type cannot be threaded through a shared record.
 
 	@Nested
 	@DisplayName("when checking result currency")

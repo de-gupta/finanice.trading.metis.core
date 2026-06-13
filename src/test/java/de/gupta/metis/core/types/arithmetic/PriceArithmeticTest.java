@@ -28,7 +28,7 @@ final class PriceArithmeticTest
 		private final PriceArithmetic arithmetic = PriceArithmetic.of(convention);
 
 		@ParameterizedTest(name = "{0}")
-		@MethodSource("additionCases")
+		@MethodSource("returnsTheSumOfRawValuesCases")
 		@DisplayName("returns the sum of raw values")
 		void returnsTheSumOfRawValues(final String as, final long left, final long right, final long expectedSum)
 		{
@@ -36,6 +36,19 @@ final class PriceArithmeticTest
 
 			assertThat(result.value().compare(PriceTypeFactory.of(expectedSum).value()))
 					.as(as)
+					.isEqualTo(ComparisonResult.EQUAL);
+		}
+
+		@Test
+		@DisplayName("thirty-seconds convention adds correctly")
+		void thirtySecondsConventionAddsCorrectly()
+		{
+			var thirtySecondsArithmetic = PriceArithmetic.of(PriceQuotingConvention.thirtySeconds(0));
+
+			var result = thirtySecondsArithmetic.add(PriceTypeFactory.of(3248), PriceTypeFactory.of(8));
+
+			assertThat(result.value().compare(PriceTypeFactory.of(3256).value()))
+					.as("101-16 (raw 3248) + 0-08 (raw 8) = 101-24 (raw 3256) in thirty-seconds notation")
 					.isEqualTo(ComparisonResult.EQUAL);
 		}
 
@@ -83,21 +96,7 @@ final class PriceArithmeticTest
 					.isEqualTo(ComparisonResult.EQUAL);
 		}
 
-		@Test
-		@DisplayName("thirty-seconds convention also adds correctly")
-		void thirtySecondsConventionAlsoAddsCorrectly()
-		{
-			var thirtySecondsArithmetic = PriceArithmetic.of(PriceQuotingConvention.thirtySeconds(0));
-
-			// 101-16 + 0-08 = 101-24  (in 32nds: 3248 + 8 = 3256)
-			var result = thirtySecondsArithmetic.add(PriceTypeFactory.of(3248), PriceTypeFactory.of(8));
-
-			assertThat(result.value().compare(PriceTypeFactory.of(3256).value()))
-					.as("3248 thirty-seconds + 8 should be 3256")
-					.isEqualTo(ComparisonResult.EQUAL);
-		}
-
-		private static Stream<Arguments> additionCases()
+		private static Stream<Arguments> returnsTheSumOfRawValuesCases()
 		{
 			return Stream.of(
 					Arguments.of("positive + positive", 45L, 30L, 75L),
@@ -107,8 +106,8 @@ final class PriceArithmeticTest
 					Arguments.of("positive + negative (net positive)", 100L, -40L, 60L),
 					Arguments.of("positive + negative (net negative)", 30L, -70L, -40L),
 					Arguments.of("negative + negative", -20L, -30L, -50L),
-					Arguments.of("symmetric positive values", 500L, -500L, 0L),
-					Arguments.of("single unit price", 1L, 1L, 2L),
+					Arguments.of("sum to zero", 500L, -500L, 0L),
+					Arguments.of("single unit", 1L, 1L, 2L),
 					Arguments.of("large positive values", 4_000_000L, 5_000_000L, 9_000_000L),
 					Arguments.of("large negative values", -4_000_000L, -5_000_000L, -9_000_000L),
 					Arguments.of("large opposing values", 9_000_000_000L, -9_000_000_000L, 0L)
@@ -124,9 +123,6 @@ final class PriceArithmeticTest
 		@DisplayName("normalizes right up to left scale when left is more precise")
 		void normalizesRightUpToLeftScaleWhenLeftIsMorePrecise()
 		{
-			// left at scale 3: value 450 = 0.450 ticks
-			// right at scale 2: value 45 = 0.45 ticks — normalized to scale 3 = 450
-			// sum at scale 3: 450 + 450 = 900
 			var leftConvention = PriceQuotingConvention.ticks(3);
 			var rightConvention = PriceQuotingConvention.ticks(2);
 			var arithmetic = PriceArithmetic.of(leftConvention, rightConvention);
@@ -134,7 +130,7 @@ final class PriceArithmeticTest
 			var result = arithmetic.add(PriceTypeFactory.of(450), PriceTypeFactory.of(45));
 
 			assertThat(result.value().compare(PriceTypeFactory.of(900).value()))
-					.as("price(450, scale=3) + price(45, scale=2) should equal price(900) at scale 3")
+					.as("price(450, scale=3) + price(45, scale=2): right normalized ×10 → 450 + 450 = 900")
 					.isEqualTo(ComparisonResult.EQUAL);
 		}
 
@@ -142,9 +138,6 @@ final class PriceArithmeticTest
 		@DisplayName("large scale difference — scale 4 and scale 1")
 		void largeScaleDifferenceFourAndOne()
 		{
-			// left at scale 4: value 10000 = 1.0000 ticks
-			// right at scale 1: value 1 = 0.1 ticks — normalized to scale 4 = 1000
-			// sum at scale 4: 10000 + 1000 = 11000
 			var leftConvention = PriceQuotingConvention.ticks(4);
 			var rightConvention = PriceQuotingConvention.ticks(1);
 			var arithmetic = PriceArithmetic.of(leftConvention, rightConvention);
@@ -152,20 +145,20 @@ final class PriceArithmeticTest
 			var result = arithmetic.add(PriceTypeFactory.of(10000), PriceTypeFactory.of(1));
 
 			assertThat(result.value().compare(PriceTypeFactory.of(11000).value()))
-					.as("price(10000, scale=4) + price(1, scale=1) should equal price(11000) at scale 4")
+					.as("price(10000, scale=4) + price(1, scale=1): right normalized ×1000 → 10000 + 1000 = 11000")
 					.isEqualTo(ComparisonResult.EQUAL);
 		}
 
 		@Test
-		@DisplayName("zero right operand at different scale still yields left unchanged")
-		void zeroRightOperandAtDifferentScaleStillYieldsLeftUnchanged()
+		@DisplayName("zero right operand at different scale yields left unchanged")
+		void zeroRightOperandAtDifferentScaleYieldsLeftUnchanged()
 		{
 			var arithmetic = PriceArithmetic.of(PriceQuotingConvention.ticks(3), PriceQuotingConvention.ticks(1));
 
 			var result = arithmetic.add(PriceTypeFactory.of(750), PriceTypeFactory.of(0));
 
 			assertThat(result.value().compare(PriceTypeFactory.of(750).value()))
-					.as("price(750) + zero should equal price(750)")
+					.as("price(750) + zero(any scale) = price(750)")
 					.isEqualTo(ComparisonResult.EQUAL);
 		}
 	}
@@ -175,7 +168,7 @@ final class PriceArithmeticTest
 	final class WhenAddingPricesWithIncompatibleConventions
 	{
 		@ParameterizedTest(name = "{0}")
-		@MethodSource("incompatibleCases")
+		@MethodSource("throwsForMismatchedUnitKindsCases")
 		@DisplayName("throws for mismatched unit kinds")
 		void throwsForMismatchedUnitKinds(final String as, final IncompatibleCase tc)
 		{
@@ -184,7 +177,7 @@ final class PriceArithmeticTest
 					.isInstanceOf(RuntimeException.class);
 		}
 
-		private static Stream<Arguments> incompatibleCases()
+		private static Stream<Arguments> throwsForMismatchedUnitKindsCases()
 		{
 			return Stream.of(
 					new IncompatibleCase("ticks vs thirty-seconds",
@@ -208,7 +201,7 @@ final class PriceArithmeticTest
 		private final PriceArithmetic arithmetic = PriceArithmetic.of(PriceQuotingConvention.ticks(2));
 
 		@ParameterizedTest(name = "{0}")
-		@MethodSource("negationCases")
+		@MethodSource("returnsPriceWithNegatedRawValueCases")
 		@DisplayName("returns price with negated raw value")
 		void returnsPriceWithNegatedRawValue(final String as, final long value, final long expectedNegated)
 		{
@@ -217,6 +210,18 @@ final class PriceArithmeticTest
 			assertThat(result.value().compare(PriceTypeFactory.of(expectedNegated).value()))
 					.as(as)
 					.isEqualTo(ComparisonResult.EQUAL);
+		}
+
+		private static Stream<Arguments> returnsPriceWithNegatedRawValueCases()
+		{
+			return Stream.of(
+					Arguments.of("negate positive", 45L, -45L),
+					Arguments.of("negate negative", -30L, 30L),
+					Arguments.of("negate zero", 0L, 0L),
+					Arguments.of("negate single unit", 1L, -1L),
+					Arguments.of("negate large value", 9_000_000_000L, -9_000_000_000L),
+					Arguments.of("negate large negative", -9_000_000_000L, 9_000_000_000L)
+			);
 		}
 
 		@Test
@@ -230,18 +235,6 @@ final class PriceArithmeticTest
 			assertThat(result.value().compare(price.value()))
 					.as("negate(negate(price)) should equal price")
 					.isEqualTo(ComparisonResult.EQUAL);
-		}
-
-		private static Stream<Arguments> negationCases()
-		{
-			return Stream.of(
-					Arguments.of("negate positive", 45L, -45L),
-					Arguments.of("negate negative", -30L, 30L),
-					Arguments.of("negate zero", 0L, 0L),
-					Arguments.of("negate single unit", 1L, -1L),
-					Arguments.of("negate large value", 9_000_000_000L, -9_000_000_000L),
-					Arguments.of("negate large negative", -9_000_000_000L, 9_000_000_000L)
-			);
 		}
 	}
 
@@ -258,7 +251,7 @@ final class PriceArithmeticTest
 			var result = arithmetic.zero();
 
 			assertThat(result.value().compare(TradingNumberFactory.zero()))
-					.as("zero() should return a price whose raw value is zero")
+					.as("zero() raw value should be zero")
 					.isEqualTo(ComparisonResult.EQUAL);
 		}
 
@@ -289,14 +282,14 @@ final class PriceArithmeticTest
 		}
 
 		@Test
-		@DisplayName("zero convention is independent of scale parameter")
-		void zeroConventionIsIndependentOfScaleParameter()
+		@DisplayName("raw value is zero regardless of convention scale")
+		void rawValueIsZeroRegardlessOfConventionScale()
 		{
 			var arith0 = PriceArithmetic.of(PriceQuotingConvention.ticks(0));
 			var arith5 = PriceArithmetic.of(PriceQuotingConvention.ticks(5));
 
 			assertThat(arith0.zero().value().compare(arith5.zero().value()))
-					.as("zero at scale 0 and zero at scale 5 should have the same raw value")
+					.as("zero at scale 0 and zero at scale 5 both have raw value zero")
 					.isEqualTo(ComparisonResult.EQUAL);
 		}
 	}

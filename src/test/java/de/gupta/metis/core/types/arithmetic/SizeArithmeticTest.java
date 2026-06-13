@@ -26,7 +26,7 @@ final class SizeArithmeticTest
 		private final SizeArithmetic arithmetic = SizeArithmetic.of(SizeQuotingConvention.units(0));
 
 		@ParameterizedTest(name = "{0}")
-		@MethodSource("additionCases")
+		@MethodSource("returnsTheSumOfRawValuesCases")
 		@DisplayName("returns the sum of raw values")
 		void returnsTheSumOfRawValues(final String as, final long left, final long right, final long expectedSum)
 		{
@@ -35,6 +35,25 @@ final class SizeArithmeticTest
 			assertThat(result.value().compare(SizeTypeFactory.of(expectedSum).value()))
 					.as(as)
 					.isEqualTo(ComparisonResult.EQUAL);
+		}
+
+		private static Stream<Arguments> returnsTheSumOfRawValuesCases()
+		{
+			return Stream.of(
+					Arguments.of("buy + buy accumulates", 100L, 50L, 150L),
+					Arguments.of("add zero to size", 75L, 0L, 75L),
+					Arguments.of("zero + size", 0L, 75L, 75L),
+					Arguments.of("zero + zero", 0L, 0L, 0L),
+					Arguments.of("reduce long position", 500L, -200L, 300L),
+					Arguments.of("close long position exactly", 500L, -500L, 0L),
+					Arguments.of("flip to short", 100L, -300L, -200L),
+					Arguments.of("add to short", -200L, -100L, -300L),
+					Arguments.of("reduce short position", -300L, 150L, -150L),
+					Arguments.of("close short position exactly", -400L, 400L, 0L),
+					Arguments.of("single-lot trade", 1L, 1L, 2L),
+					Arguments.of("large institutional sizes", 1_000_000L, 2_000_000L, 3_000_000L),
+					Arguments.of("large opposing institutional sizes", 5_000_000L, -5_000_000L, 0L)
+			);
 		}
 
 		@Test
@@ -80,25 +99,6 @@ final class SizeArithmeticTest
 					.as("size + (-size) should be zero")
 					.isEqualTo(ComparisonResult.EQUAL);
 		}
-
-		private static Stream<Arguments> additionCases()
-		{
-			return Stream.of(
-					Arguments.of("buy + buy accumulates", 100L, 50L, 150L),
-					Arguments.of("add zero to size", 75L, 0L, 75L),
-					Arguments.of("zero + size", 0L, 75L, 75L),
-					Arguments.of("zero + zero", 0L, 0L, 0L),
-					Arguments.of("reduce long position", 500L, -200L, 300L),
-					Arguments.of("close long position exactly", 500L, -500L, 0L),
-					Arguments.of("flip to short", 100L, -300L, -200L),
-					Arguments.of("add to short", -200L, -100L, -300L),
-					Arguments.of("reduce short position", -300L, 150L, -150L),
-					Arguments.of("close short position exactly", -400L, 400L, 0L),
-					Arguments.of("single-lot trade", 1L, 1L, 2L),
-					Arguments.of("large institutional sizes", 1_000_000L, 2_000_000L, 3_000_000L),
-					Arguments.of("large opposing institutional sizes", 5_000_000L, -5_000_000L, 0L)
-			);
-		}
 	}
 
 	@Nested
@@ -108,7 +108,7 @@ final class SizeArithmeticTest
 		private final SizeArithmetic arithmetic = SizeArithmetic.of(SizeQuotingConvention.lots(0));
 
 		@ParameterizedTest(name = "{0}")
-		@MethodSource("lotsCases")
+		@MethodSource("treatsRawValuesAsLotCountsCases")
 		@DisplayName("treats raw values as lot counts")
 		void treatsRawValuesAsLotCounts(final String as, final long left, final long right, final long expectedSum)
 		{
@@ -119,12 +119,12 @@ final class SizeArithmeticTest
 					.isEqualTo(ComparisonResult.EQUAL);
 		}
 
-		private static Stream<Arguments> lotsCases()
+		private static Stream<Arguments> treatsRawValuesAsLotCountsCases()
 		{
 			return Stream.of(
-					Arguments.of("5 lots + 3 lots", 5L, 3L, 8L),
-					Arguments.of("10 lots - 10 lots", 10L, -10L, 0L),
-					Arguments.of("fractional lots at scale 2", 150L, 250L, 400L)
+					Arguments.of("5 lots + 3 lots = 8 lots", 5L, 3L, 8L),
+					Arguments.of("10 lots - 10 lots = 0 lots", 10L, -10L, 0L),
+					Arguments.of("fractional lots at scale 2: 1.50 + 2.50 = 4.00", 150L, 250L, 400L)
 			);
 		}
 	}
@@ -134,20 +134,15 @@ final class SizeArithmeticTest
 	final class WhenAddingWithFractionalScale
 	{
 		@Test
-		@DisplayName("scale normalization — left more precise than right")
-		void scaleNormalizationLeftMorePreciseThanRight()
+		@DisplayName("normalizes right up to left scale when left is more precise")
+		void normalizesRightUpToLeftScaleWhenLeftIsMorePrecise()
 		{
-			// left at scale 2: value 150 = 1.50 BTC
-			// right at scale 0: value 1 = 1 BTC — normalized to scale 2 = 100
-			// sum at scale 2: 150 + 100 = 250
-			var arithmetic = SizeArithmetic.of(
-					SizeQuotingConvention.units(2),
-					SizeQuotingConvention.units(0));
+			var arithmetic = SizeArithmetic.of(SizeQuotingConvention.units(2), SizeQuotingConvention.units(0));
 
 			var result = arithmetic.add(SizeTypeFactory.of(150), SizeTypeFactory.of(1));
 
 			assertThat(result.value().compare(SizeTypeFactory.of(250).value()))
-					.as("size(150, scale=2) + size(1, scale=0) should equal size(250)")
+					.as("size(150, scale=2) + size(1, scale=0): right normalized ×100 → 150 + 100 = 250")
 					.isEqualTo(ComparisonResult.EQUAL);
 		}
 	}
@@ -157,7 +152,7 @@ final class SizeArithmeticTest
 	final class WhenAddingWithIncompatibleConventions
 	{
 		@ParameterizedTest(name = "{0}")
-		@MethodSource("incompatibleCases")
+		@MethodSource("throwsForMismatchedUnitKindsCases")
 		@DisplayName("throws for mismatched unit kinds")
 		void throwsForMismatchedUnitKinds(final String as, final SizeArithmetic arithmetic)
 		{
@@ -166,7 +161,7 @@ final class SizeArithmeticTest
 					.isInstanceOf(RuntimeException.class);
 		}
 
-		private static Stream<Arguments> incompatibleCases()
+		private static Stream<Arguments> throwsForMismatchedUnitKindsCases()
 		{
 			return Stream.of(
 					Arguments.of("units vs lots",
@@ -186,7 +181,7 @@ final class SizeArithmeticTest
 		private final SizeArithmetic arithmetic = SizeArithmetic.of(SizeQuotingConvention.units(0));
 
 		@ParameterizedTest(name = "{0}")
-		@MethodSource("negationCases")
+		@MethodSource("returnsSizeWithNegatedRawValueCases")
 		@DisplayName("returns size with negated raw value")
 		void returnsSizeWithNegatedRawValue(final String as, final long value, final long expectedNegated)
 		{
@@ -195,6 +190,17 @@ final class SizeArithmeticTest
 			assertThat(result.value().compare(SizeTypeFactory.of(expectedNegated).value()))
 					.as(as)
 					.isEqualTo(ComparisonResult.EQUAL);
+		}
+
+		private static Stream<Arguments> returnsSizeWithNegatedRawValueCases()
+		{
+			return Stream.of(
+					Arguments.of("negate long position", 500L, -500L),
+					Arguments.of("negate short position", -200L, 200L),
+					Arguments.of("negate zero", 0L, 0L),
+					Arguments.of("negate single unit", 1L, -1L),
+					Arguments.of("negate large position", 10_000_000L, -10_000_000L)
+			);
 		}
 
 		@Test
@@ -208,17 +214,6 @@ final class SizeArithmeticTest
 			assertThat(result.value().compare(size.value()))
 					.as("negate(negate(size)) should equal size")
 					.isEqualTo(ComparisonResult.EQUAL);
-		}
-
-		private static Stream<Arguments> negationCases()
-		{
-			return Stream.of(
-					Arguments.of("negate long position", 500L, -500L),
-					Arguments.of("negate short position", -200L, 200L),
-					Arguments.of("negate zero", 0L, 0L),
-					Arguments.of("negate single unit", 1L, -1L),
-					Arguments.of("negate large position", 10_000_000L, -10_000_000L)
-			);
 		}
 	}
 
@@ -235,7 +230,7 @@ final class SizeArithmeticTest
 			var result = arithmetic.zero();
 
 			assertThat(result.value().compare(TradingNumberFactory.zero()))
-					.as("zero() should return a size whose raw value is zero")
+					.as("zero() raw value should be zero")
 					.isEqualTo(ComparisonResult.EQUAL);
 		}
 

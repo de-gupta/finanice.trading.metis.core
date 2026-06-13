@@ -1,5 +1,6 @@
 package de.gupta.metis.core.types.arithmetic;
 
+import de.gupta.aletheia.collection.Dyad;
 import de.gupta.aletheia.functional.Unfolding;
 import de.gupta.commons.utility.comparison.ComparisonResult;
 import de.gupta.commons.utility.comparison.DescriptivelyComparableStructure;
@@ -65,12 +66,11 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 			final BiFunction<TradingNumber, TradingNumber, R> operation)
 	{
 		return Unfolding.beckon(scaleDifference)
-		                .trifurcate(
-								Integer::signum,
-								() -> operation.apply(left.multiply(scaleFactor(-scaleDifference)), right),
-								() -> operation.apply(left, right),
-								() -> operation.apply(left, right.multiply(scaleFactor(scaleDifference)))
-						);
+		                .trifurcate(Integer::intValue,
+								d -> Dyad.of(left.multiply(scaleFactor(-d)), right),
+								_ -> Dyad.of(left, right),
+								d -> Dyad.of(left, right.multiply(scaleFactor(d))))
+		                .coronate(dyad -> operation.apply(dyad.sinister(), dyad.dexter()));
 	}
 
 	private static TradingNumber scaleFactor(final int n)

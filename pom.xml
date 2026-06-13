@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.github.de-gupta</groupId>
         <artifactId>de-gupta-parent</artifactId>
-        <version>0.3.4</version>
+        <version>0.3.5</version>
     </parent>
 
     <name>${project.artifactId}</name>

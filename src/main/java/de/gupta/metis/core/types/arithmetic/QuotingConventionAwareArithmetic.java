@@ -8,7 +8,10 @@ import de.gupta.metis.core.types.number.TradingNumber;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
 import de.gupta.metis.core.types.quoting.QuotingConvention;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements AdditiveAbelianGroupStructure<E>
 {
@@ -36,18 +39,16 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 	@Override
 	public E add(final E left, final E right)
 	{
-		final TradingNumber leftRaw = extractor.apply(left);
-
 		return Unfolding.beckon(extractor.apply(right))
 		                .discern(_ -> leftQuotingConvention.isCompatibleWith(rightQuotingConvention))
 		                .wield(
 								_ -> leftQuotingConvention.scaleDifference(rightQuotingConvention),
-								(rightRaw, diff) -> rightRaw.cleave(
-										_ -> diff > 0,
-										r -> r.multiply(TradingNumberFactory.of(pow10(diff))).add(leftRaw),
-										r -> diff < 0
-												? leftRaw.multiply(TradingNumberFactory.of(pow10(-diff))).add(r)
-												: leftRaw.add(r)
+								(rightRaw, difference) -> Unfolding.beckon(
+										rightRaw.smite(
+												scaleDispatch(difference, extractor.apply(left)),
+												() -> new IllegalStateException(
+										                "unreachable: difference is always positive, negative, or zero")
+										)
 								)
 						)
 		                .metamorphose(factory)
@@ -61,11 +62,17 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 		return factory.apply(TradingNumberFactory.zero());
 	}
 
-	private static long pow10(final int n)
+	private static Map<Predicate<? super TradingNumber>, Function<? super TradingNumber, TradingNumber>> scaleDispatch(
+			final int difference, final TradingNumber left)
 	{
-		long result = 1;
-		for (int i = 0; i < n; i++) result = Math.multiplyExact(result, 10L);
-		return result;
+		final var cases =
+				new LinkedHashMap<Predicate<? super TradingNumber>, Function<? super TradingNumber, TradingNumber>>();
+		cases.put(_ -> difference > 0,
+				(TradingNumber r) -> r.multiply(TradingNumberFactory.of(Math.powExact(10L, difference))).add(left));
+		cases.put(_ -> difference < 0,
+				(TradingNumber r) -> left.multiply(TradingNumberFactory.of(Math.powExact(10L, -difference))).add(r));
+		cases.put(_ -> difference == 0, left::add);
+		return cases;
 	}
 
 	private QuotingConventionAwareArithmetic(final QuotingConvention<?> leftQuotingConvention,

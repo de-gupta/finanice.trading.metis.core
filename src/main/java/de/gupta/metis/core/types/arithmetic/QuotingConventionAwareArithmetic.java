@@ -1,6 +1,8 @@
 package de.gupta.metis.core.types.arithmetic;
 
 import de.gupta.aletheia.functional.Unfolding;
+import de.gupta.commons.utility.comparison.ComparisonResult;
+import de.gupta.commons.utility.comparison.DescriptivelyComparableStructure;
 import de.gupta.commons.utility.math.algebra.element.binary.notation.additive.Zero;
 import de.gupta.commons.utility.math.algebra.structure.binary.notation.additive.AdditiveAbelianGroupStructure;
 import de.gupta.metis.core.types.exception.IncompatibleInputException;
@@ -10,10 +12,12 @@ import de.gupta.metis.core.types.quoting.QuotingConvention;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements AdditiveAbelianGroupStructure<E>
+final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements AdditiveAbelianGroupStructure<E>,
+		DescriptivelyComparableStructure<E>
 {
 	private final QuotingConvention<?> leftQuotingConvention;
 	private final QuotingConvention<?> rightQuotingConvention;
@@ -39,21 +43,16 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 	@Override
 	public E add(final E left, final E right)
 	{
-		return Unfolding.beckon(extractor.apply(right))
-		                .discern(_ -> leftQuotingConvention.isCompatibleWith(rightQuotingConvention))
-		                .wield(
-								_ -> leftQuotingConvention.scaleDifference(rightQuotingConvention),
-								(rightRaw, difference) -> Unfolding.beckon(
-										rightRaw.smite(
-												scaleDispatch(difference, extractor.apply(left)),
-												() -> new IllegalStateException(
-										                "unreachable: difference is always positive, negative, or zero")
-										)
-								)
-						)
-		                .metamorphose(factory)
-		                .decree(IncompatibleInputException.from(
-								"Incompatible quoting conventions: " + leftQuotingConvention + " and " + rightQuotingConvention));
+		return factory.apply(
+				conventionGuarded(scaleReconciled(extractor.apply(left), extractor.apply(right), TradingNumber::add))
+		);
+	}
+
+	@Override
+	public ComparisonResult compare(final E left, final E right)
+	{
+		return conventionGuarded(
+				scaleReconciled(extractor.apply(left), extractor.apply(right), TradingNumber::compare));
 	}
 
 	@Override
@@ -62,17 +61,28 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 		return factory.apply(TradingNumberFactory.zero());
 	}
 
-	private static Map<Predicate<? super TradingNumber>, Function<? super TradingNumber, TradingNumber>> scaleDispatch(
-			final int difference, final TradingNumber left)
+	private static <R> Map<Predicate<? super Integer>, Function<? super Integer, R>> scaleReconciled(
+			final TradingNumber left, final TradingNumber right,
+			final BiFunction<TradingNumber, TradingNumber, R> operation)
 	{
-		final var cases =
-				new LinkedHashMap<Predicate<? super TradingNumber>, Function<? super TradingNumber, TradingNumber>>();
-		cases.put(_ -> difference > 0,
-				(TradingNumber r) -> r.multiply(TradingNumberFactory.of(Math.powExact(10L, difference))).add(left));
-		cases.put(_ -> difference < 0,
-				(TradingNumber r) -> left.multiply(TradingNumberFactory.of(Math.powExact(10L, -difference))).add(r));
-		cases.put(_ -> difference == 0, left::add);
+		final var cases = new LinkedHashMap<Predicate<? super Integer>, Function<? super Integer, R>>();
+		cases.put(d -> d > 0, d -> operation.apply(left, right.multiply(scaleFactor(d))));
+		cases.put(d -> d < 0, d -> operation.apply(left.multiply(scaleFactor(-d)), right));
+		cases.put(d -> d == 0, _ -> operation.apply(left, right));
 		return cases;
+	}
+
+	private static TradingNumber scaleFactor(final int n)
+	{
+		return TradingNumberFactory.of(Math.powExact(10L, n));
+	}
+
+	private <R> R conventionGuarded(final Map<Predicate<? super Integer>, Function<? super Integer, R>> cases)
+	{
+		return Unfolding.beckon(leftQuotingConvention.scaleDifference(rightQuotingConvention))
+		                .discern(_ -> leftQuotingConvention.isCompatibleWith(rightQuotingConvention))
+		                .smite(cases, IncompatibleInputException.from(
+								"Incompatible quoting conventions: " + leftQuotingConvention + " and " + rightQuotingConvention));
 	}
 
 	private QuotingConventionAwareArithmetic(final QuotingConvention<?> leftQuotingConvention,

@@ -1,11 +1,14 @@
 package de.gupta.metis.core.types.arithmetic;
 
+import de.gupta.commons.utility.comparison.ComparisonResult;
+import de.gupta.commons.utility.comparison.DescriptivelyComparableStructure;
 import de.gupta.commons.utility.math.algebra.structure.binary.notation.additive.AdditiveAbelianGroupStructure;
 import de.gupta.metis.core.types.quoting.SizeQuotingConvention;
 import de.gupta.metis.core.types.size.SizeType;
 import de.gupta.metis.core.types.size.SizeTypeFactory;
 
-public final class SizeArithmetic implements AdditiveAbelianGroupStructure<SizeType>
+public final class SizeArithmetic
+		implements AdditiveAbelianGroupStructure<SizeType>, DescriptivelyComparableStructure<SizeType>
 {
 	private final QuotingConventionAwareArithmetic<SizeType> delegate;
 
@@ -35,6 +38,12 @@ public final class SizeArithmetic implements AdditiveAbelianGroupStructure<SizeT
 	public SizeType add(final SizeType left, final SizeType right)
 	{
 		return delegate.add(left, right);
+	}
+
+	@Override
+	public ComparisonResult compare(final SizeType left, final SizeType right)
+	{
+		return delegate.compare(left, right);
 	}
 
 	private SizeArithmetic(final SizeQuotingConvention<?> left, final SizeQuotingConvention<?> right)

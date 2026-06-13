@@ -175,4 +175,127 @@ final class MoneyArithmeticDivideTest
 					.isInstanceOf(ArithmeticException.class);
 		}
 	}
+
+	// ── Money / Price = Size ──────────────────────────────────────────────────
+
+	@Nested
+	@DisplayName("when dividing USD money by a USD price (whole-unit size)")
+	final class WhenDividingUsdMoneyByUsdPrice
+	{
+		private final SizeQuotingConvention<SizeQuotingUnit.Units> sizeConvention = SizeQuotingConvention.units(0);
+
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsSizeEqualToMoneyDividedByPriceCases")
+		@DisplayName("returns size equal to money divided by price")
+		void returnsSizeEqualToMoneyDividedByPrice(final String as, final long moneyRaw, final long priceRaw,
+		                                           final long expectedSizeRaw)
+		{
+			var money = MoneyTypeFactory.of(TradingNumberFactory.of(moneyRaw), Currency.USD.INSTANCE);
+
+			var result = MoneyArithmetic.divide(money, PriceTypeFactory.of(priceRaw), sizeConvention);
+
+			assertThat(result.value().compare(SizeTypeFactory.of(expectedSizeRaw).value()))
+					.as(as)
+					.isEqualTo(ComparisonResult.EQUAL);
+		}
+
+		private static Stream<Arguments> returnsSizeEqualToMoneyDividedByPriceCases()
+		{
+			return Stream.of(
+					Arguments.of("$5.00 / $1.00 = 5 units", 500L, 100L, 5L),
+					Arguments.of("$1.00 / $1.00 = 1 unit", 100L, 100L, 1L),
+					Arguments.of("$45,000 / $450 = 100 units", 4_500_000L, 45_000L, 100L),
+					Arguments.of("-$50.00 / $10.00 = -5 units (short)", -5000L, 1000L, -5L)
+			);
+		}
+	}
+
+	@Nested
+	@DisplayName("when dividing money by price with fractional size scale")
+	final class WhenDividingMoneyByPriceWithFractionalSizeScale
+	{
+		private final SizeQuotingConvention<SizeQuotingUnit.Units> btcSizeConvention = SizeQuotingConvention.units(8);
+
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("appliesSizeScaleBeforeDividingByPriceCases")
+		@DisplayName("applies size scale before dividing by price")
+		void appliesSizeScaleBeforeDividingByPrice(final String as, final long moneyRaw, final long priceRaw,
+		                                           final long expectedSizeRaw)
+		{
+			var money = MoneyTypeFactory.of(TradingNumberFactory.of(moneyRaw), Currency.USD.INSTANCE);
+
+			var result = MoneyArithmetic.divide(money, PriceTypeFactory.of(priceRaw), btcSizeConvention);
+
+			assertThat(result.value().compare(SizeTypeFactory.of(expectedSizeRaw).value()))
+					.as(as)
+					.isEqualTo(ComparisonResult.EQUAL);
+		}
+
+		private static Stream<Arguments> appliesSizeScaleBeforeDividingByPriceCases()
+		{
+			return Stream.of(
+					Arguments.of("$112,500 / $45,000 (scale 8) = 2.5 BTC", 11_250_000L, 4_500_000L, 250_000_000L),
+					Arguments.of("$45,000 / $45,000 (scale 8) = 1 BTC", 4_500_000L, 4_500_000L, 100_000_000L),
+					Arguments.of("$0 / $45,000 (scale 8) = 0 BTC", 0L, 4_500_000L, 0L),
+					Arguments.of("-$112,500 / $45,000 (scale 8) = -2.5 BTC (short)", -11_250_000L, 4_500_000L,
+							-250_000_000L)
+			);
+		}
+	}
+
+	@Nested
+	@DisplayName("when money divide by price is the inverse of multiply")
+	final class WhenMoneyDivideByPriceIsTheInverseOfMultiply
+	{
+		@Test
+		@DisplayName("multiply then divide by price recovers original size when division is exact")
+		void multiplyThenDivideByPriceRecoversOriginalSizeWhenDivisionIsExact()
+		{
+			var price = PriceTypeFactory.of(4_500_000L);
+			var originalSize = SizeTypeFactory.of(250_000_000L);
+			var priceConvention = PriceQuotingConvention.currency(Currency.USD.INSTANCE);
+			var sizeConvention = SizeQuotingConvention.units(8);
+
+			var money = MoneyArithmetic.multiply(price, originalSize, priceConvention, sizeConvention);
+			var result = MoneyArithmetic.divide(money, price, sizeConvention);
+
+			assertThat(result.value().compare(originalSize.value()))
+					.as("multiply then divide by price should recover original size when division is exact")
+					.isEqualTo(ComparisonResult.EQUAL);
+		}
+
+		@Test
+		@DisplayName("multiply then divide by price recovers original size for JPY")
+		void multiplyThenDivideByPriceRecoversOriginalSizeForJpy()
+		{
+			var price = PriceTypeFactory.of(5000L);
+			var originalSize = SizeTypeFactory.of(10_000L);
+			var priceConvention = PriceQuotingConvention.currency(Currency.JPY.INSTANCE);
+			var sizeConvention = SizeQuotingConvention.units(0);
+
+			var money = MoneyArithmetic.multiply(price, originalSize, priceConvention, sizeConvention);
+			var result = MoneyArithmetic.divide(money, price, sizeConvention);
+
+			assertThat(result.value().compare(originalSize.value()))
+					.as("¥5,000 × 10,000 then ÷ ¥5,000 should recover 10,000 shares")
+					.isEqualTo(ComparisonResult.EQUAL);
+		}
+	}
+
+	@Nested
+	@DisplayName("when price is zero")
+	final class WhenPriceIsZero
+	{
+		@Test
+		@DisplayName("throws arithmetic exception for division by zero price")
+		void throwsArithmeticExceptionForDivisionByZeroPrice()
+		{
+			var money = MoneyTypeFactory.of(TradingNumberFactory.of(10000L), Currency.USD.INSTANCE);
+
+			assertThatThrownBy(
+					() -> MoneyArithmetic.divide(money, PriceTypeFactory.of(0L), SizeQuotingConvention.units(0)))
+					.as("dividing by zero price should throw ArithmeticException")
+					.isInstanceOf(ArithmeticException.class);
+		}
+	}
 }

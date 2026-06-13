@@ -12,6 +12,7 @@ import de.gupta.metis.core.types.quoting.CurrencyPriceUnit;
 import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
 import de.gupta.metis.core.types.quoting.SizeQuotingConvention;
 import de.gupta.metis.core.types.size.SizeType;
+import de.gupta.metis.core.types.size.SizeTypeFactory;
 
 public final class MoneyArithmetic
 {
@@ -42,6 +43,20 @@ public final class MoneyArithmetic
 		                .metamorphose(scaled -> scaled.quotient(size.value()))
 		                .metamorphose(PriceTypeFactory::of)
 		                .decree(MissingInputException.from("Missing money or size"));
+	}
+
+	public static <C extends Currency> SizeType divide(
+			final MoneyType<C> money,
+			final PriceType price,
+			final SizeQuotingConvention<?> sizeConvention)
+	{
+		return Unfolding.beckon(money)
+		                .metamorphose(MoneyType::value)
+		                .metamorphose(
+				                m -> m.multiply(TradingNumberFactory.of(Math.powExact(10L, sizeConvention.scale()))))
+		                .metamorphose(scaled -> scaled.quotient(price.value()))
+		                .metamorphose(SizeTypeFactory::of)
+		                .decree(MissingInputException.from("Missing money or price"));
 	}
 
 	private MoneyArithmetic()

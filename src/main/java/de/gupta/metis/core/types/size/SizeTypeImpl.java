@@ -8,7 +8,7 @@ record SizeTypeImpl(TradingNumber value) implements SizeType
 	@Override
 	public SizeType zero()
 	{
-		return of(TradingNumberFactory.of(0));
+		return of(TradingNumberFactory.zero());
 	}
 
 	static SizeType of(final TradingNumber value)

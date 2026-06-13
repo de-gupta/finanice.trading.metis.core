@@ -187,9 +187,10 @@ less precise operand is scaled up; no precision is lost).
 // Same convention for both operands
 var arithmetic = PriceArithmetic.of(PriceQuotingConvention.ticks(2));
 
-PriceType sum    = arithmetic.add(p1, p2);
-PriceType neg    = arithmetic.negate(p1);
-PriceType zero   = arithmetic.zero();
+PriceType sum = arithmetic.add(p1, p2);
+PriceType neg = arithmetic.negate(p1);
+PriceType zero = arithmetic.zero();
+ComparisonResult cmp = arithmetic.compare(p1, p2);  // GREATER_THAN / LESS_THAN / EQUAL
 
 // Different conventions (left and right may have different scales)
 var mixed = PriceArithmetic.of(PriceQuotingConvention.ticks(3), PriceQuotingConvention.ticks(2));
@@ -266,8 +267,9 @@ MoneyType<Currency.JPY> jpyNotional = MoneyArithmetic.multiply(
 - **Yield / rate types** — basis points and percentage-based quoting belong to a future `YieldType` domain.
   `FixedScaleQuotingUnit` is reserved for this purpose.
 - **FX conversion** — cross-currency operations require an FX rate type not yet modelled.
-- **Comparison of Price/Size** — comparing two `PriceType` values requires knowing their scale (i.e., the convention).
-  Not yet implemented; use `TradingNumber.compare()` on extracted raw values if needed.
+- **`PriceOrder` / `SizeOrder` interfaces** — `PriceArithmetic.compare()` and `SizeArithmetic.compare()` are implemented
+  and return `ComparisonResult`, but there are no named ordering interfaces yet. These are planned; for now call
+  `compare()` directly on the arithmetic instance.
 
 ---
 
@@ -282,5 +284,7 @@ MoneyType<Currency.JPY> jpyNotional = MoneyArithmetic.multiply(
 6. `Currency.USD.INSTANCE` etc. are singletons — safe to compare with `==` or `isSameAs()`.
 7. Arithmetic overflow throws `ArithmeticException` (from `Math.addExact`, `Math.multiplyExact`, `Math.powExact`).
 8. `MoneyArithmetic.divide(money, price, sizeConvention)` assumes `price` is at `money.currency().canonicalScale()`.
+9. `PriceArithmetic.compare()` and `SizeArithmetic.compare()` obey the same convention compatibility rules as `add()` —
+   incompatible unit kinds throw, different scales are reconciled losslessly before comparing.
    There is no compile-time enforcement — the caller is responsible. Passing a tick-priced `PriceType` gives a silently
    wrong result.

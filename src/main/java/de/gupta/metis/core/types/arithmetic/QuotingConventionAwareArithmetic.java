@@ -43,7 +43,7 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 								r -> extractor.apply(r).multiply(TradingNumberFactory.of(
 										pow10(leftQuotingConvention.scaleDifference(rightQuotingConvention))))
 						)
-		                .metamorphose(r -> r.multiply(extractor.apply(left)))
+		                .metamorphose(r -> r.add(extractor.apply(left)))
 		                .metamorphose(factory)
 		                .decree(IncompatibleInputException.from(
 								"Incompatible quoting conventions: " + leftQuotingConvention + " and " + rightQuotingConvention));

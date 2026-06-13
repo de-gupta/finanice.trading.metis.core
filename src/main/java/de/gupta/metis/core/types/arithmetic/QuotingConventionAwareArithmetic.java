@@ -26,8 +26,11 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 			final Function<E, TradingNumber> extractor,
 			final Function<TradingNumber, E> factory)
 	{
-		return new QuotingConventionAwareArithmetic<>(leftQuotingConvention, rightQuotingConvention, extractor,
-				factory);
+		if (!leftQuotingConvention.isCompatibleWith(rightQuotingConvention)) throw IncompatibleInputException.of(
+				"Incompatible quoting conventions: " + leftQuotingConvention + " and " + rightQuotingConvention);
+
+		return new QuotingConventionAwareArithmetic<>(leftQuotingConvention.scaleDifference(rightQuotingConvention),
+				extractor, factory);
 	}
 
 	@Override
@@ -75,16 +78,11 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 		return TradingNumberFactory.of(Math.powExact(10L, n));
 	}
 
-	private QuotingConventionAwareArithmetic(final QuotingConvention<?> leftQuotingConvention,
-	                                         final QuotingConvention<?> rightQuotingConvention,
+	private QuotingConventionAwareArithmetic(final int scaleDifference,
 	                                         final Function<E, TradingNumber> extractor,
 	                                         final Function<TradingNumber, E> factory)
 	{
-		if (!leftQuotingConvention.isCompatibleWith(rightQuotingConvention))
-			throw IncompatibleInputException.of(
-					"Incompatible quoting conventions: " + leftQuotingConvention + " and " + rightQuotingConvention);
-
-		this.scaleDifference = leftQuotingConvention.scaleDifference(rightQuotingConvention);
+		this.scaleDifference = scaleDifference;
 		this.extractor = extractor;
 		this.factory = factory;
 	}

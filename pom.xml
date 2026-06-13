@@ -11,7 +11,7 @@
     </parent>
 
     <name>${project.artifactId}</name>
-    <artifactId>metis.core</artifactId>
+    <artifactId>metis.core.types</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <scm>

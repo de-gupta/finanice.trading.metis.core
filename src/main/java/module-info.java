@@ -1,4 +1,4 @@
-module de.gupta.metis.core
+module de.gupta.metis.core.types
 {
 	exports de.gupta.metis.core.types.number;
 	exports de.gupta.metis.core.types.currency;

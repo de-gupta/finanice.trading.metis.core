@@ -90,6 +90,32 @@ final class SizeArithmeticCompareTest
 					.as("size(99, scale=2) < size(1, scale=0): 0.99 < 1.00 units")
 					.isEqualTo(ComparisonResult.LESS_THAN);
 		}
+
+		@Test
+		@DisplayName("normalizes before comparing — right more precise than left, equal values")
+		void normalizesBeforeComparingWhenRightIsMorePreciseEqualValues()
+		{
+			var arithmetic = SizeArithmetic.of(SizeQuotingConvention.units(0), SizeQuotingConvention.units(2));
+
+			var result = arithmetic.compare(SizeTypeFactory.of(1), SizeTypeFactory.of(100));
+
+			assertThat(result)
+					.as("size(1, scale=0) = size(100, scale=2): both represent 1 unit")
+					.isEqualTo(ComparisonResult.EQUAL);
+		}
+
+		@Test
+		@DisplayName("normalizes before comparing — right more precise than left, left greater")
+		void normalizesBeforeComparingWhenRightIsMorePreciseLeftGreater()
+		{
+			var arithmetic = SizeArithmetic.of(SizeQuotingConvention.units(0), SizeQuotingConvention.units(2));
+
+			var result = arithmetic.compare(SizeTypeFactory.of(2), SizeTypeFactory.of(199));
+
+			assertThat(result)
+					.as("size(2, scale=0) > size(199, scale=2): 2.00 > 1.99 units")
+					.isEqualTo(ComparisonResult.GREATER_THAN);
+		}
 	}
 
 	@Nested

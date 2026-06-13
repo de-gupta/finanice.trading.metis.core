@@ -105,6 +105,32 @@ final class PriceArithmeticCompareTest
 					.as("price(451, scale=3) > price(45, scale=2): 0.451 > 0.450 ticks")
 					.isEqualTo(ComparisonResult.GREATER_THAN);
 		}
+
+		@Test
+		@DisplayName("normalizes before comparing — right more precise than left, equal values")
+		void normalizesBeforeComparingWhenRightIsMorePreciseEqualValues()
+		{
+			var arithmetic = PriceArithmetic.of(PriceQuotingConvention.ticks(2), PriceQuotingConvention.ticks(3));
+
+			var result = arithmetic.compare(PriceTypeFactory.of(45), PriceTypeFactory.of(450));
+
+			assertThat(result)
+					.as("price(45, scale=2) = price(450, scale=3): both represent 0.450 ticks")
+					.isEqualTo(ComparisonResult.EQUAL);
+		}
+
+		@Test
+		@DisplayName("normalizes before comparing — right more precise than left, left less")
+		void normalizesBeforeComparingWhenRightIsMorePreciseLeftLess()
+		{
+			var arithmetic = PriceArithmetic.of(PriceQuotingConvention.ticks(2), PriceQuotingConvention.ticks(3));
+
+			var result = arithmetic.compare(PriceTypeFactory.of(45), PriceTypeFactory.of(451));
+
+			assertThat(result)
+					.as("price(45, scale=2) < price(451, scale=3): 0.450 < 0.451 ticks")
+					.isEqualTo(ComparisonResult.LESS_THAN);
+		}
 	}
 
 	@Nested

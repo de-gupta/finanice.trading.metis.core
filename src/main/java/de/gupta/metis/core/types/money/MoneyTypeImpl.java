@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.money;
 
-import de.gupta.commons.utility.comparison.ComparisonResult;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.currency.Currency;
 import de.gupta.metis.core.types.number.TradingNumber;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
@@ -37,7 +37,7 @@ record MoneyTypeImpl<C extends Currency>(TradingNumber value, C currency) implem
 	}
 
 	@Override
-	public ComparisonResult compare(final MoneyType<C> other)
+	public OrderRelation compare(final MoneyType<C> other)
 	{
 		return value.compare(other.value());
 	}

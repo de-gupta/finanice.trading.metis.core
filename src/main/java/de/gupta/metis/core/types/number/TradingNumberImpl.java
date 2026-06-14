@@ -1,7 +1,7 @@
 package de.gupta.metis.core.types.number;
 
-import de.gupta.commons.utility.comparison.ComparisonResult;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
 
 final class TradingNumberImpl implements TradingNumber
 {
@@ -75,16 +75,11 @@ final class TradingNumberImpl implements TradingNumber
 	}
 
 	@Override
-	public ComparisonResult compare(final TradingNumber other)
+	public OrderRelation compare(final TradingNumber other)
 	{
 		return switch (other)
 		{
-			case TradingNumberImpl w -> switch (Long.compare(value, w.value))
-			{
-				case 0 -> ComparisonResult.EQUAL;
-				case -1 -> ComparisonResult.LESS_THAN;
-				default -> ComparisonResult.GREATER_THAN;
-			};
+			case TradingNumberImpl w -> OrderRelation.from(Long.compare(value, w.value));
 		};
 	}
 

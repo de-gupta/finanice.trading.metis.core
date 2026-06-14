@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.arithmetic;
 
-import de.gupta.commons.utility.comparison.ComparisonResult;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.price.PriceTypeFactory;
 import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +28,7 @@ final class PriceArithmeticCompareTest
 		@MethodSource("compareResultCases")
 		@DisplayName("returns the correct ordering")
 		void returnsTheCorrectOrdering(final String as, final long left, final long right,
-		                               final ComparisonResult expected)
+		                               final OrderRelation expected)
 		{
 			var result = arithmetic.compare(PriceTypeFactory.of(left), PriceTypeFactory.of(right));
 
@@ -45,8 +45,8 @@ final class PriceArithmeticCompareTest
 			var aVsB = arithmetic.compare(a, b);
 			var bVsA = arithmetic.compare(b, a);
 
-			assertThat(aVsB).as("a > b").isEqualTo(ComparisonResult.GREATER_THAN);
-			assertThat(bVsA).as("b < a").isEqualTo(ComparisonResult.LESS_THAN);
+			assertThat(aVsB).as("a > b").isEqualTo(OrderRelation.GREATER_THAN);
+			assertThat(bVsA).as("b < a").isEqualTo(OrderRelation.LESS_THAN);
 		}
 
 		@Test
@@ -59,19 +59,19 @@ final class PriceArithmeticCompareTest
 
 			assertThat(result)
 					.as("101-16 (raw 3248) > 100-16 (raw 3216) in thirty-seconds notation")
-					.isEqualTo(ComparisonResult.GREATER_THAN);
+					.isEqualTo(OrderRelation.GREATER_THAN);
 		}
 
 		private static Stream<Arguments> compareResultCases()
 		{
 			return Stream.of(
-					Arguments.of("greater than", 100L, 50L, ComparisonResult.GREATER_THAN),
-					Arguments.of("less than", 50L, 100L, ComparisonResult.LESS_THAN),
-					Arguments.of("equal", 75L, 75L, ComparisonResult.EQUAL),
-					Arguments.of("zero equals zero", 0L, 0L, ComparisonResult.EQUAL),
-					Arguments.of("positive vs negative", 1L, -1L, ComparisonResult.GREATER_THAN),
-					Arguments.of("negative vs positive", -1L, 1L, ComparisonResult.LESS_THAN),
-					Arguments.of("large values", 9_000_000_000L, 8_999_999_999L, ComparisonResult.GREATER_THAN)
+					Arguments.of("greater than", 100L, 50L, OrderRelation.GREATER_THAN),
+					Arguments.of("less than", 50L, 100L, OrderRelation.LESS_THAN),
+					Arguments.of("equal", 75L, 75L, OrderRelation.EQUAL),
+					Arguments.of("zero equals zero", 0L, 0L, OrderRelation.EQUAL),
+					Arguments.of("positive vs negative", 1L, -1L, OrderRelation.GREATER_THAN),
+					Arguments.of("negative vs positive", -1L, 1L, OrderRelation.LESS_THAN),
+					Arguments.of("large values", 9_000_000_000L, 8_999_999_999L, OrderRelation.GREATER_THAN)
 			);
 		}
 	}
@@ -90,7 +90,7 @@ final class PriceArithmeticCompareTest
 
 			assertThat(result)
 					.as("price(450, scale=3) = price(45, scale=2): both represent 0.450 ticks")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -103,7 +103,7 @@ final class PriceArithmeticCompareTest
 
 			assertThat(result)
 					.as("price(451, scale=3) > price(45, scale=2): 0.451 > 0.450 ticks")
-					.isEqualTo(ComparisonResult.GREATER_THAN);
+					.isEqualTo(OrderRelation.GREATER_THAN);
 		}
 
 		@Test
@@ -116,7 +116,7 @@ final class PriceArithmeticCompareTest
 
 			assertThat(result)
 					.as("price(45, scale=2) = price(450, scale=3): both represent 0.450 ticks")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -129,7 +129,7 @@ final class PriceArithmeticCompareTest
 
 			assertThat(result)
 					.as("price(45, scale=2) < price(451, scale=3): 0.450 < 0.451 ticks")
-					.isEqualTo(ComparisonResult.LESS_THAN);
+					.isEqualTo(OrderRelation.LESS_THAN);
 		}
 	}
 

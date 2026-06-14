@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.size;
 
-import de.gupta.commons.utility.comparison.ComparisonResult;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,7 +25,7 @@ final class SizeTypeTest
 
 			assertThat(zero.value().compare(TradingNumberFactory.zero()))
 					.as("zero() raw value")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 
@@ -43,7 +43,7 @@ final class SizeTypeTest
 
 			assertThat(size.value().compare(number))
 					.as("wrapped value equals original number")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 }

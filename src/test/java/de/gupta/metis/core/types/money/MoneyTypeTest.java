@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.money;
 
-import de.gupta.commons.utility.comparison.ComparisonResult;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.currency.Currency;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +35,7 @@ final class MoneyTypeTest
 
 			assertThat(result.value().compare(TradingNumberFactory.of(expected)))
 					.as("%s — value", as)
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 			assertThat(result.currency())
 					.as("%s — currency", as)
 					.isSameAs(Currency.USD.INSTANCE);
@@ -66,7 +66,7 @@ final class MoneyTypeTest
 
 			assertThat(result.value().compare(TradingNumberFactory.zero()))
 					.as("zero() raw value")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 			assertThat(result.currency())
 					.as("zero() currency")
 					.isSameAs(Currency.USD.INSTANCE);
@@ -86,7 +86,7 @@ final class MoneyTypeTest
 
 			assertThat(result.value().compare(TradingNumberFactory.of(expectedSum)))
 					.as("%s — value", as)
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 			assertThat(result.currency())
 					.as("%s — currency preserved", as)
 					.isSameAs(Currency.USD.INSTANCE);
@@ -109,25 +109,25 @@ final class MoneyTypeTest
 	final class WhenComparing
 	{
 		@ParameterizedTest(name = "{0}")
-		@MethodSource("returnsCorrectComparisonResultCases")
+		@MethodSource("returnsCorrectOrderRelationCases")
 		@DisplayName("returns correct comparison result")
-		void returnsCorrectComparisonResult(final String as, final long left, final long right,
-		                                    final ComparisonResult expected)
+		void returnsCorrectOrderRelation(final String as, final long left, final long right,
+		                                 final OrderRelation expected)
 		{
 			var result = usd(left).compare(usd(right));
 
 			assertThat(result).as(as).isEqualTo(expected);
 		}
 
-		private static Stream<Arguments> returnsCorrectComparisonResultCases()
+		private static Stream<Arguments> returnsCorrectOrderRelationCases()
 		{
 			return Stream.of(
-					Arguments.of("100 > 50", 100L, 50L, ComparisonResult.GREATER_THAN),
-					Arguments.of("50 < 100", 50L, 100L, ComparisonResult.LESS_THAN),
-					Arguments.of("100 = 100", 100L, 100L, ComparisonResult.EQUAL),
-					Arguments.of("0 = 0", 0L, 0L, ComparisonResult.EQUAL),
-					Arguments.of("positive > negative", 1L, -1L, ComparisonResult.GREATER_THAN),
-					Arguments.of("negative < positive", -1L, 1L, ComparisonResult.LESS_THAN)
+					Arguments.of("100 > 50", 100L, 50L, OrderRelation.GREATER_THAN),
+					Arguments.of("50 < 100", 50L, 100L, OrderRelation.LESS_THAN),
+					Arguments.of("100 = 100", 100L, 100L, OrderRelation.EQUAL),
+					Arguments.of("0 = 0", 0L, 0L, OrderRelation.EQUAL),
+					Arguments.of("positive > negative", 1L, -1L, OrderRelation.GREATER_THAN),
+					Arguments.of("negative < positive", -1L, 1L, OrderRelation.LESS_THAN)
 			);
 		}
 	}

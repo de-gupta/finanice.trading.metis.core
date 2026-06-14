@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.arithmetic;
 
-import de.gupta.commons.utility.comparison.ComparisonResult;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
 import de.gupta.metis.core.types.quoting.SizeQuotingConvention;
 import de.gupta.metis.core.types.size.SizeTypeFactory;
@@ -34,7 +34,7 @@ final class SizeArithmeticTest
 
 			assertThat(result.value().compare(SizeTypeFactory.of(expectedSum).value()))
 					.as(as)
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		private static Stream<Arguments> returnsTheSumOfRawValuesCases()
@@ -68,7 +68,7 @@ final class SizeArithmeticTest
 
 			assertThat(leftPlusRight.value().compare(rightPlusLeft.value()))
 					.as("add(300, 200) should equal add(200, 300)")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -84,7 +84,7 @@ final class SizeArithmeticTest
 
 			assertThat(leftGrouped.value().compare(rightGrouped.value()))
 					.as("(a+b)+c should equal a+(b+c)")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -97,7 +97,7 @@ final class SizeArithmeticTest
 
 			assertThat(result.value().compare(TradingNumberFactory.zero()))
 					.as("size + (-size) should be zero")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 
@@ -116,7 +116,7 @@ final class SizeArithmeticTest
 
 			assertThat(result.value().compare(SizeTypeFactory.of(expectedSum).value()))
 					.as(as)
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		private static Stream<Arguments> treatsRawValuesAsLotCountsCases()
@@ -143,7 +143,7 @@ final class SizeArithmeticTest
 
 			assertThat(result.value().compare(SizeTypeFactory.of(250).value()))
 					.as("size(150, scale=2) + size(1, scale=0): right normalized ×100 → 150 + 100 = 250")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 
@@ -193,7 +193,7 @@ final class SizeArithmeticTest
 
 			assertThat(result.value().compare(SizeTypeFactory.of(expectedNegated).value()))
 					.as(as)
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		private static Stream<Arguments> returnsSizeWithNegatedRawValueCases()
@@ -217,7 +217,7 @@ final class SizeArithmeticTest
 
 			assertThat(result.value().compare(size.value()))
 					.as("negate(negate(size)) should equal size")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 
@@ -235,7 +235,7 @@ final class SizeArithmeticTest
 
 			assertThat(result.value().compare(TradingNumberFactory.zero()))
 					.as("zero() raw value should be zero")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -250,10 +250,10 @@ final class SizeArithmeticTest
 
 			assertThat(addZeroRight.value().compare(size.value()))
 					.as("size + zero should equal size")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 			assertThat(addZeroLeft.value().compare(size.value()))
 					.as("zero + size should equal size")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 }

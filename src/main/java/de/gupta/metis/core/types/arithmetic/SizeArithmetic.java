@@ -1,14 +1,14 @@
 package de.gupta.metis.core.types.arithmetic;
 
-import de.gupta.commons.utility.comparison.ComparisonResult;
-import de.gupta.commons.utility.comparison.DescriptivelyComparableStructure;
 import de.gupta.commons.utility.math.algebra.structure.binary.notation.additive.AdditiveAbelianGroupStructure;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
+import de.gupta.commons.utility.math.ordering.structure.TotalOrderStructure;
 import de.gupta.metis.core.types.quoting.SizeQuotingConvention;
 import de.gupta.metis.core.types.size.SizeType;
 import de.gupta.metis.core.types.size.SizeTypeFactory;
 
 public final class SizeArithmetic
-		implements AdditiveAbelianGroupStructure<SizeType>, DescriptivelyComparableStructure<SizeType>
+		implements AdditiveAbelianGroupStructure<SizeType>, TotalOrderStructure<SizeType>
 {
 	private final QuotingConventionAwareArithmetic<SizeType> delegate;
 
@@ -41,7 +41,7 @@ public final class SizeArithmetic
 	}
 
 	@Override
-	public ComparisonResult compare(final SizeType left, final SizeType right)
+	public OrderRelation compare(final SizeType left, final SizeType right)
 	{
 		return delegate.compare(left, right);
 	}

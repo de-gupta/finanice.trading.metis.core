@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.arithmetic;
 
-import de.gupta.commons.utility.comparison.ComparisonResult;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.currency.Currency;
 import de.gupta.metis.core.types.money.MoneyType;
 import de.gupta.metis.core.types.money.MoneyTypeFactory;
@@ -31,7 +31,7 @@ final class MoneyArithmeticTest
 	{
 		assertThat(actual.value().compare(expected.value()))
 				.as("%s — monetary value", as)
-				.isEqualTo(ComparisonResult.EQUAL);
+				.isEqualTo(OrderRelation.EQUAL);
 		assertThat(actual.currency())
 				.as("%s — currency", as)
 				.isSameAs(expected.currency());

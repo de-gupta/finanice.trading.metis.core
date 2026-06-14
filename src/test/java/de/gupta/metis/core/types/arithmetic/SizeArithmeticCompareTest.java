@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.arithmetic;
 
-import de.gupta.commons.utility.comparison.ComparisonResult;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.quoting.SizeQuotingConvention;
 import de.gupta.metis.core.types.size.SizeTypeFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +28,7 @@ final class SizeArithmeticCompareTest
 		@MethodSource("compareResultCases")
 		@DisplayName("returns the correct ordering")
 		void returnsTheCorrectOrdering(final String as, final long left, final long right,
-		                               final ComparisonResult expected)
+		                               final OrderRelation expected)
 		{
 			var result = arithmetic.compare(SizeTypeFactory.of(left), SizeTypeFactory.of(right));
 
@@ -45,18 +45,18 @@ final class SizeArithmeticCompareTest
 
 			assertThat(result)
 					.as("5 lots > 3 lots")
-					.isEqualTo(ComparisonResult.GREATER_THAN);
+					.isEqualTo(OrderRelation.GREATER_THAN);
 		}
 
 		private static Stream<Arguments> compareResultCases()
 		{
 			return Stream.of(
-					Arguments.of("long position larger than short", 500L, -200L, ComparisonResult.GREATER_THAN),
-					Arguments.of("flat vs long", 0L, 100L, ComparisonResult.LESS_THAN),
-					Arguments.of("equal positions", 300L, 300L, ComparisonResult.EQUAL),
-					Arguments.of("zero equals zero", 0L, 0L, ComparisonResult.EQUAL),
-					Arguments.of("two short positions", -100L, -200L, ComparisonResult.GREATER_THAN),
-					Arguments.of("large vs small", 10_000_000L, 1L, ComparisonResult.GREATER_THAN)
+					Arguments.of("long position larger than short", 500L, -200L, OrderRelation.GREATER_THAN),
+					Arguments.of("flat vs long", 0L, 100L, OrderRelation.LESS_THAN),
+					Arguments.of("equal positions", 300L, 300L, OrderRelation.EQUAL),
+					Arguments.of("zero equals zero", 0L, 0L, OrderRelation.EQUAL),
+					Arguments.of("two short positions", -100L, -200L, OrderRelation.GREATER_THAN),
+					Arguments.of("large vs small", 10_000_000L, 1L, OrderRelation.GREATER_THAN)
 			);
 		}
 	}
@@ -75,7 +75,7 @@ final class SizeArithmeticCompareTest
 
 			assertThat(result)
 					.as("size(100, scale=2) = size(1, scale=0): both represent 1 unit")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -88,7 +88,7 @@ final class SizeArithmeticCompareTest
 
 			assertThat(result)
 					.as("size(99, scale=2) < size(1, scale=0): 0.99 < 1.00 units")
-					.isEqualTo(ComparisonResult.LESS_THAN);
+					.isEqualTo(OrderRelation.LESS_THAN);
 		}
 
 		@Test
@@ -101,7 +101,7 @@ final class SizeArithmeticCompareTest
 
 			assertThat(result)
 					.as("size(1, scale=0) = size(100, scale=2): both represent 1 unit")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -114,7 +114,7 @@ final class SizeArithmeticCompareTest
 
 			assertThat(result)
 					.as("size(2, scale=0) > size(199, scale=2): 2.00 > 1.99 units")
-					.isEqualTo(ComparisonResult.GREATER_THAN);
+					.isEqualTo(OrderRelation.GREATER_THAN);
 		}
 	}
 

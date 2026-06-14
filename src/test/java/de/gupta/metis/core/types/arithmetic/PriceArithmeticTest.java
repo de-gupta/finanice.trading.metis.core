@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.arithmetic;
 
-import de.gupta.commons.utility.comparison.ComparisonResult;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.currency.Currency;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
 import de.gupta.metis.core.types.price.PriceTypeFactory;
@@ -37,7 +37,7 @@ final class PriceArithmeticTest
 
 			assertThat(result.value().compare(PriceTypeFactory.of(expectedSum).value()))
 					.as(as)
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -50,7 +50,7 @@ final class PriceArithmeticTest
 
 			assertThat(result.value().compare(PriceTypeFactory.of(3256).value()))
 					.as("101-16 (raw 3248) + 0-08 (raw 8) = 101-24 (raw 3256) in thirty-seconds notation")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -65,7 +65,7 @@ final class PriceArithmeticTest
 
 			assertThat(leftPlusRight.value().compare(rightPlusLeft.value()))
 					.as("add(45, 30) should equal add(30, 45)")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -81,7 +81,7 @@ final class PriceArithmeticTest
 
 			assertThat(leftGrouped.value().compare(rightGrouped.value()))
 					.as("(a+b)+c should equal a+(b+c)")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -94,7 +94,7 @@ final class PriceArithmeticTest
 
 			assertThat(result.value().compare(TradingNumberFactory.zero()))
 					.as("price + (-price) should be zero")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		private static Stream<Arguments> returnsTheSumOfRawValuesCases()
@@ -132,7 +132,7 @@ final class PriceArithmeticTest
 
 			assertThat(result.value().compare(PriceTypeFactory.of(900).value()))
 					.as("price(450, scale=3) + price(45, scale=2): right normalized ×10 → 450 + 450 = 900")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -147,7 +147,7 @@ final class PriceArithmeticTest
 
 			assertThat(result.value().compare(PriceTypeFactory.of(11000).value()))
 					.as("price(10000, scale=4) + price(1, scale=1): right normalized ×1000 → 10000 + 1000 = 11000")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -160,7 +160,7 @@ final class PriceArithmeticTest
 
 			assertThat(result.value().compare(PriceTypeFactory.of(750).value()))
 					.as("price(750) + zero(any scale) = price(750)")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -175,7 +175,7 @@ final class PriceArithmeticTest
 
 			assertThat(result.value().compare(PriceTypeFactory.of(900).value()))
 					.as("price(45, scale=2) + price(450, scale=3): left normalized ×10 → 450 + 450 = 900 at scale 3")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 
@@ -227,7 +227,7 @@ final class PriceArithmeticTest
 
 			assertThat(result.value().compare(PriceTypeFactory.of(expectedNegated).value()))
 					.as(as)
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		private static Stream<Arguments> returnsPriceWithNegatedRawValueCases()
@@ -252,7 +252,7 @@ final class PriceArithmeticTest
 
 			assertThat(result.value().compare(price.value()))
 					.as("negate(negate(price)) should equal price")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 
@@ -270,7 +270,7 @@ final class PriceArithmeticTest
 
 			assertThat(result.value().compare(TradingNumberFactory.zero()))
 					.as("zero() raw value should be zero")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -283,7 +283,7 @@ final class PriceArithmeticTest
 
 			assertThat(result.value().compare(price.value()))
 					.as("price + zero should equal price")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -296,7 +296,7 @@ final class PriceArithmeticTest
 
 			assertThat(result.value().compare(price.value()))
 					.as("zero + price should equal price")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -308,7 +308,7 @@ final class PriceArithmeticTest
 
 			assertThat(arith0.zero().value().compare(arith5.zero().value()))
 					.as("zero at scale 0 and zero at scale 5 both have raw value zero")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 

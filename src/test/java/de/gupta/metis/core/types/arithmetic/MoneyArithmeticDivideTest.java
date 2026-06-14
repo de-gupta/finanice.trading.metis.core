@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.arithmetic;
 
-import de.gupta.commons.utility.comparison.ComparisonResult;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.currency.Currency;
 import de.gupta.metis.core.types.money.MoneyTypeFactory;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
@@ -42,7 +42,7 @@ final class MoneyArithmeticDivideTest
 
 			assertThat(result.value().compare(PriceTypeFactory.of(expectedPriceRaw).value()))
 					.as(as)
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		private static Stream<Arguments> returnsPriceEqualToMoneyDividedBySizeCases()
@@ -75,7 +75,7 @@ final class MoneyArithmeticDivideTest
 
 			assertThat(result.value().compare(PriceTypeFactory.of(expectedPriceRaw).value()))
 					.as(as)
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		private static Stream<Arguments> appliesSizeScaleBeforeDividingCases()
@@ -103,7 +103,7 @@ final class MoneyArithmeticDivideTest
 
 			assertThat(result.value().compare(PriceTypeFactory.of(166L).value()))
 					.as("$5.00 / 3 units = $1.66 (500 / 3 = 166 remainder 2, truncated)")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -116,7 +116,7 @@ final class MoneyArithmeticDivideTest
 
 			assertThat(result.value().compare(PriceTypeFactory.of(-166L).value()))
 					.as("-$5.00 / 3 units = -$1.66 (truncated, not -$1.67)")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 
@@ -138,7 +138,7 @@ final class MoneyArithmeticDivideTest
 
 			assertThat(result.value().compare(originalPrice.value()))
 					.as("multiply then divide should recover the original price when division is exact")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -155,7 +155,7 @@ final class MoneyArithmeticDivideTest
 
 			assertThat(result.value().compare(originalPrice.value()))
 					.as("¥5,000 × 10,000 shares then ÷ 10,000 shares should recover ¥5,000")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 
@@ -196,7 +196,7 @@ final class MoneyArithmeticDivideTest
 
 			assertThat(result.value().compare(SizeTypeFactory.of(expectedSizeRaw).value()))
 					.as(as)
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		private static Stream<Arguments> returnsSizeEqualToMoneyDividedByPriceCases()
@@ -228,7 +228,7 @@ final class MoneyArithmeticDivideTest
 
 			assertThat(result.value().compare(SizeTypeFactory.of(expectedSizeRaw).value()))
 					.as(as)
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		private static Stream<Arguments> appliesSizeScaleBeforeDividingByPriceCases()
@@ -261,7 +261,7 @@ final class MoneyArithmeticDivideTest
 
 			assertThat(result.value().compare(originalSize.value()))
 					.as("multiply then divide by price should recover original size when division is exact")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -278,7 +278,7 @@ final class MoneyArithmeticDivideTest
 
 			assertThat(result.value().compare(originalSize.value()))
 					.as("¥5,000 × 10,000 then ÷ ¥5,000 should recover 10,000 shares")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 

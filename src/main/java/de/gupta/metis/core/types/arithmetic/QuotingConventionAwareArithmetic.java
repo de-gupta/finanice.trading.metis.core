@@ -2,10 +2,10 @@ package de.gupta.metis.core.types.arithmetic;
 
 import de.gupta.aletheia.collection.Dyad;
 import de.gupta.aletheia.functional.Unfolding;
-import de.gupta.commons.utility.comparison.ComparisonResult;
-import de.gupta.commons.utility.comparison.DescriptivelyComparableStructure;
 import de.gupta.commons.utility.math.algebra.element.binary.notation.additive.Zero;
 import de.gupta.commons.utility.math.algebra.structure.binary.notation.additive.AdditiveAbelianGroupStructure;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
+import de.gupta.commons.utility.math.ordering.structure.TotalOrderStructure;
 import de.gupta.metis.core.types.exception.IncompatibleInputException;
 import de.gupta.metis.core.types.number.TradingNumber;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
@@ -15,7 +15,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements AdditiveAbelianGroupStructure<E>,
-		DescriptivelyComparableStructure<E>
+		TotalOrderStructure<E>
 {
 	private final int scaleDifference;
 	private final Function<E, TradingNumber> extractor;
@@ -47,7 +47,7 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 	}
 
 	@Override
-	public ComparisonResult compare(final E left, final E right)
+	public OrderRelation compare(final E left, final E right)
 	{
 		return scaleAndApply(extractor.apply(left), extractor.apply(right), TradingNumber::compare);
 	}

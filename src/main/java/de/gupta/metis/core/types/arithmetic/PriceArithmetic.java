@@ -1,14 +1,14 @@
 package de.gupta.metis.core.types.arithmetic;
 
-import de.gupta.commons.utility.comparison.ComparisonResult;
-import de.gupta.commons.utility.comparison.DescriptivelyComparableStructure;
 import de.gupta.commons.utility.math.algebra.structure.binary.notation.additive.AdditiveAbelianGroupStructure;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
+import de.gupta.commons.utility.math.ordering.structure.TotalOrderStructure;
 import de.gupta.metis.core.types.price.PriceType;
 import de.gupta.metis.core.types.price.PriceTypeFactory;
 import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
 
 public final class PriceArithmetic
-		implements AdditiveAbelianGroupStructure<PriceType>, DescriptivelyComparableStructure<PriceType>
+		implements AdditiveAbelianGroupStructure<PriceType>, TotalOrderStructure<PriceType>
 {
 	private final QuotingConventionAwareArithmetic<PriceType> delegate;
 
@@ -41,7 +41,7 @@ public final class PriceArithmetic
 	}
 
 	@Override
-	public ComparisonResult compare(final PriceType left, final PriceType right)
+	public OrderRelation compare(final PriceType left, final PriceType right)
 	{
 		return delegate.compare(left, right);
 	}

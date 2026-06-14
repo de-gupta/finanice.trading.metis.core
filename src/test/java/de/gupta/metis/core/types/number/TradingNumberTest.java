@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.number;
 
-import de.gupta.commons.utility.comparison.ComparisonResult;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -67,7 +67,7 @@ final class TradingNumberTest
 			var zeroA = TradingNumberFactory.zero();
 			var zeroB = TradingNumberFactory.of(5L).zero();
 
-			assertThat(zeroA.compare(zeroB)).as("zero instances compare equal").isEqualTo(ComparisonResult.EQUAL);
+			assertThat(zeroA.compare(zeroB)).as("zero instances compare equal").isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 
@@ -85,7 +85,7 @@ final class TradingNumberTest
 
 			assertThat(one.compare(TradingNumberFactory.of(1L)))
 					.as("one.compare(1)")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test
@@ -95,7 +95,7 @@ final class TradingNumberTest
 			var fromFactory = TradingNumberFactory.of(1L);
 			var fromMethod = TradingNumberFactory.of(50L).one();
 
-			assertThat(fromFactory.compare(fromMethod)).as("both equal one").isEqualTo(ComparisonResult.EQUAL);
+			assertThat(fromFactory.compare(fromMethod)).as("both equal one").isEqualTo(OrderRelation.EQUAL);
 		}
 	}
 
@@ -112,7 +112,7 @@ final class TradingNumberTest
 
 			assertThat(result.compare(TradingNumberFactory.of(expectedNorm)))
 					.as(as)
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		private static Stream<Arguments> normCases()
@@ -163,7 +163,7 @@ final class TradingNumberTest
 
 			assertThat(fromInt.compare(fromLong))
 					.as("int and long 42 compare equal")
-					.isEqualTo(ComparisonResult.EQUAL);
+					.isEqualTo(OrderRelation.EQUAL);
 		}
 
 		@Test

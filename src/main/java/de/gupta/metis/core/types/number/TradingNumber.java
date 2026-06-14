@@ -8,4 +8,14 @@ public sealed interface TradingNumber
 		permits TradingNumberImpl
 {
 	boolean isZero();
+
+	default boolean isPositive()
+	{
+		return this.compare(zero()).isGreaterThan();
+	}
+
+	default boolean isNegative()
+	{
+		return this.compare(zero()).isLessThan();
+	}
 }

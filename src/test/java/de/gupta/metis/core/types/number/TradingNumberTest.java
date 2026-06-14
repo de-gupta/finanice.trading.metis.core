@@ -151,6 +151,58 @@ final class TradingNumberTest
 	}
 
 	@Nested
+	@DisplayName("when checking isPositive")
+	final class WhenCheckingIsPositive
+	{
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsCorrectResultBasedOnSignCases")
+		@DisplayName("returns correct result based on sign")
+		void returnsCorrectResultBasedOnSign(final String as, final long value, final boolean expected)
+		{
+			assertThat(TradingNumberFactory.of(value).isPositive()).as(as).isEqualTo(expected);
+		}
+
+		private static Stream<Arguments> returnsCorrectResultBasedOnSignCases()
+		{
+			return Stream.of(
+					Arguments.of("one returns true", 1L, true),
+					Arguments.of("typical positive (42) returns true", 42L, true),
+					Arguments.of("large positive (Long.MAX_VALUE) returns true", Long.MAX_VALUE, true),
+					Arguments.of("zero returns false", 0L, false),
+					Arguments.of("negative one returns false", -1L, false),
+					Arguments.of("typical negative (-42) returns false", -42L, false),
+					Arguments.of("large negative (Long.MIN_VALUE) returns false", Long.MIN_VALUE, false)
+			);
+		}
+	}
+
+	@Nested
+	@DisplayName("when checking isNegative")
+	final class WhenCheckingIsNegative
+	{
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsCorrectResultBasedOnSignCases")
+		@DisplayName("returns correct result based on sign")
+		void returnsCorrectResultBasedOnSign(final String as, final long value, final boolean expected)
+		{
+			assertThat(TradingNumberFactory.of(value).isNegative()).as(as).isEqualTo(expected);
+		}
+
+		private static Stream<Arguments> returnsCorrectResultBasedOnSignCases()
+		{
+			return Stream.of(
+					Arguments.of("negative one returns true", -1L, true),
+					Arguments.of("typical negative (-42) returns true", -42L, true),
+					Arguments.of("large negative (Long.MIN_VALUE) returns true", Long.MIN_VALUE, true),
+					Arguments.of("zero returns false", 0L, false),
+					Arguments.of("one returns false", 1L, false),
+					Arguments.of("typical positive (42) returns false", 42L, false),
+					Arguments.of("large positive (Long.MAX_VALUE) returns false", Long.MAX_VALUE, false)
+			);
+		}
+	}
+
+	@Nested
 	@DisplayName("when creating with int value")
 	final class WhenCreatingWithIntValue
 	{

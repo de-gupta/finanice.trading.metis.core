@@ -1,16 +1,16 @@
 package de.gupta.metis.core.types.number;
 
-import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegerEuclideanDomain;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegersAsEuclideanDomain;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.commons.utility.math.algebra.structure.ring.EuclideanDomainStructure;
-import de.gupta.commons.utility.math.algebra.structure.ring.standard.LongEuclideanDomainStructure;
+import de.gupta.commons.utility.math.algebra.structure.ring.standard.IntegersEuclideanDomainStructure;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 
 final class TradingNumberImpl implements TradingNumber
 {
 	private static final TradingNumber ZERO = new TradingNumberImpl(0);
 	private static final TradingNumber ONE = new TradingNumberImpl(1);
-	private static final EuclideanDomainStructure<Long> canonical = LongEuclideanDomainStructure.INSTANCE;
+	private static final EuclideanDomainStructure<Long> canonical = IntegersEuclideanDomainStructure.INSTANCE;
 
 	private final long value;
 
@@ -94,7 +94,7 @@ final class TradingNumberImpl implements TradingNumber
 	}
 
 	@Override
-	public TradingNumber scale(final IntegerEuclideanDomain scalar)
+	public TradingNumber scale(final IntegersAsEuclideanDomain scalar)
 	{
 		return from(Math.multiplyExact(value, scalar.value()));
 	}

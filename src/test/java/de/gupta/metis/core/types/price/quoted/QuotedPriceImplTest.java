@@ -26,7 +26,13 @@ final class QuotedPriceImplTest
 
 	private static QuotedPrice<PriceQuotingUnit.Ticks> ticks2(final long rawValue)
 	{
-		return QuotedPriceImpl.of(PriceTypeFactory.of(rawValue), TICKS_2);
+		return quotedPrice(rawValue, TICKS_2);
+	}
+
+	private static <U extends PriceQuotingUnit> QuotedPrice<U> quotedPrice(final long rawValue,
+	                                                                       final PriceQuotingConvention<U> convention)
+	{
+		return QuotedPriceImpl.of(PriceTypeFactory.of(rawValue), convention);
 	}
 
 	private static void assertQuotedPrice(final QuotedPrice<?> actual, final long expectedRawValue,
@@ -101,6 +107,53 @@ final class QuotedPriceImplTest
 					Arguments.of("4500 + 0 = 4500", 4_500L, 0L, 4_500L),
 					Arguments.of("negative and positive values combine", -300L, 125L, -175L)
 			);
+		}
+
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsTheSumWithDifferentScalesButTheSameUnitCases")
+		@DisplayName("returns the sum normalized to the more precise convention when scales differ")
+		void returnsTheSumNormalizedToTheMorePreciseConventionWhenScalesDiffer(final String as,
+		                                                                       final AdditionCase additionCase)
+		{
+			var result = quotedPrice(additionCase.leftRawValue(), additionCase.leftConvention())
+					.add(quotedPrice(additionCase.rightRawValue(), additionCase.rightConvention()));
+
+			assertQuotedPrice(result, additionCase.expectedRawValue(), additionCase.expectedConvention(), as);
+		}
+
+		private static Stream<Arguments> returnsTheSumWithDifferentScalesButTheSameUnitCases()
+		{
+			return Stream.of(
+					AdditionCase.of("left more precise than right",
+							PriceQuotingConvention.ticks(3), 450L,
+							PriceQuotingConvention.ticks(2), 45L,
+							900L, PriceQuotingConvention.ticks(3)),
+					AdditionCase.of("right more precise than left",
+							PriceQuotingConvention.ticks(2), 45L,
+							PriceQuotingConvention.ticks(3), 450L,
+							900L, PriceQuotingConvention.ticks(3)),
+					AdditionCase.of("zero at a different scale leaves left unchanged",
+							PriceQuotingConvention.ticks(3), 750L,
+							PriceQuotingConvention.ticks(1), 0L,
+							750L, PriceQuotingConvention.ticks(3))
+			).map(additionCase -> Arguments.of(additionCase.as(), additionCase));
+		}
+
+		private record AdditionCase(String as, PriceQuotingConvention<PriceQuotingUnit.Ticks> leftConvention,
+		                            long leftRawValue, PriceQuotingConvention<PriceQuotingUnit.Ticks> rightConvention,
+		                            long rightRawValue, long expectedRawValue,
+		                            PriceQuotingConvention<PriceQuotingUnit.Ticks> expectedConvention)
+		{
+			private static AdditionCase of(final String as,
+			                               final PriceQuotingConvention<PriceQuotingUnit.Ticks> leftConvention,
+			                               final long leftRawValue,
+			                               final PriceQuotingConvention<PriceQuotingUnit.Ticks> rightConvention,
+			                               final long rightRawValue, final long expectedRawValue,
+			                               final PriceQuotingConvention<PriceQuotingUnit.Ticks> expectedConvention)
+			{
+				return new AdditionCase(as, leftConvention, leftRawValue, rightConvention, rightRawValue,
+						expectedRawValue, expectedConvention);
+			}
 		}
 	}
 

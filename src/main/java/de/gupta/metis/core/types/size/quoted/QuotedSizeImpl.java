@@ -34,7 +34,9 @@ final class QuotedSizeImpl<U extends SizeQuotingUnit> implements QuotedSize<U>
 	@Override
 	public QuotedSize<U> add(final QuotedSize<U> other)
 	{
-		return with(SizeArithmetic.of(convention, other.convention()).add(size, other.size()));
+		var resultConvention = convention.scale() >= other.convention().scale() ? convention : other.convention();
+
+		return of(SizeArithmetic.of(convention, other.convention()).add(size, other.size()), resultConvention);
 	}
 
 	@Override

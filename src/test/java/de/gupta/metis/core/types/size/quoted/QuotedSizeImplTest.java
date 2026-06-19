@@ -170,6 +170,53 @@ final class QuotedSizeImplTest
 					Arguments.of("negative and positive values combine", -300L, 125L, -175L)
 			);
 		}
+
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsTheSumWithDifferentScalesButTheSameUnitCases")
+		@DisplayName("returns the sum normalized to the more precise convention when scales differ")
+		void returnsTheSumNormalizedToTheMorePreciseConventionWhenScalesDiffer(final String as,
+		                                                                       final AdditionCase additionCase)
+		{
+			var result = quotedSize(additionCase.leftRawValue(), additionCase.leftConvention())
+					.add(quotedSize(additionCase.rightRawValue(), additionCase.rightConvention()));
+
+			assertQuotedSize(result, additionCase.expectedRawValue(), additionCase.expectedConvention(), as);
+		}
+
+		private static Stream<Arguments> returnsTheSumWithDifferentScalesButTheSameUnitCases()
+		{
+			return Stream.of(
+					AdditionCase.of("left more precise than right",
+							SizeQuotingConvention.units(2), 150L,
+							SizeQuotingConvention.units(0), 1L,
+							250L, SizeQuotingConvention.units(2)),
+					AdditionCase.of("right more precise than left",
+							SizeQuotingConvention.units(0), 1L,
+							SizeQuotingConvention.units(2), 150L,
+							250L, SizeQuotingConvention.units(2)),
+					AdditionCase.of("zero at a different scale leaves left unchanged",
+							SizeQuotingConvention.units(3), 750L,
+							SizeQuotingConvention.units(1), 0L,
+							750L, SizeQuotingConvention.units(3))
+			).map(additionCase -> Arguments.of(additionCase.as(), additionCase));
+		}
+
+		private record AdditionCase(String as, SizeQuotingConvention<SizeQuotingUnit.Units> leftConvention,
+		                            long leftRawValue, SizeQuotingConvention<SizeQuotingUnit.Units> rightConvention,
+		                            long rightRawValue, long expectedRawValue,
+		                            SizeQuotingConvention<SizeQuotingUnit.Units> expectedConvention)
+		{
+			private static AdditionCase of(final String as,
+			                               final SizeQuotingConvention<SizeQuotingUnit.Units> leftConvention,
+			                               final long leftRawValue,
+			                               final SizeQuotingConvention<SizeQuotingUnit.Units> rightConvention,
+			                               final long rightRawValue, final long expectedRawValue,
+			                               final SizeQuotingConvention<SizeQuotingUnit.Units> expectedConvention)
+			{
+				return new AdditionCase(as, leftConvention, leftRawValue, rightConvention, rightRawValue,
+						expectedRawValue, expectedConvention);
+			}
+		}
 	}
 
 	@Nested

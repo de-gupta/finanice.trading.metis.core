@@ -14,5 +14,7 @@ public sealed interface QuotedPrice<U extends PriceQuotingUnit> extends Module<Q
 
 	PriceQuotingConvention<U> convention();
 
+	QuotedPrice<U> requote(final PriceQuotingConvention<U> targetConvention);
+
 	DivisionResult<QuotedPrice<U>> divide(final int divisor);
 }

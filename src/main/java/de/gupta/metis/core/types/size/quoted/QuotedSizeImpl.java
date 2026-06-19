@@ -5,6 +5,7 @@ import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.metis.core.types.arithmetic.SizeArithmetic;
 import de.gupta.metis.core.types.quoting.SizeQuotingConvention;
 import de.gupta.metis.core.types.quoting.SizeQuotingUnit;
+import de.gupta.metis.core.types.quoting.utility.QuotingConventionRequoting;
 import de.gupta.metis.core.types.size.SizeType;
 import de.gupta.metis.core.types.size.SizeTypeFactory;
 
@@ -61,6 +62,13 @@ final class QuotedSizeImpl<U extends SizeQuotingUnit> implements QuotedSize<U>
 	public SizeQuotingConvention<U> convention()
 	{
 		return convention;
+	}
+
+	@Override
+	public QuotedSize<U> requote(final SizeQuotingConvention<U> targetConvention)
+	{
+		return of(SizeTypeFactory.of(QuotingConventionRequoting.requote(size.value(), convention, targetConvention)),
+				targetConvention);
 	}
 
 	@Override

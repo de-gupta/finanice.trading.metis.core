@@ -234,6 +234,51 @@ final class QuotedSizeImplTest
 	}
 
 	@Nested
+	@DisplayName("when requoting")
+	final class WhenRequoting
+	{
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsQuotedSizeWithTheTargetConventionCases")
+		@DisplayName("returns quoted size with the target convention")
+		void returnsQuotedSizeWithTheTargetConvention(final String as, final RequoteCase requoteCase)
+		{
+			var result = quotedSize(requoteCase.sourceRawValue(), requoteCase.sourceConvention())
+					.requote(requoteCase.targetConvention());
+
+			assertQuotedSize(result, requoteCase.expectedRawValue(), requoteCase.targetConvention(), as);
+		}
+
+		private static Stream<Arguments> returnsQuotedSizeWithTheTargetConventionCases()
+		{
+			return Stream.of(
+					RequoteCase.of("same scale keeps raw value unchanged",
+							SizeQuotingConvention.units(2), 450L,
+							SizeQuotingConvention.units(2), 450L),
+					RequoteCase.of("upscaling multiplies by the scale factor",
+							SizeQuotingConvention.units(2), 45L,
+							SizeQuotingConvention.units(3), 450L),
+					RequoteCase.of("downscaling truncates the quotient",
+							SizeQuotingConvention.units(3), 451L,
+							SizeQuotingConvention.units(2), 45L)
+			).map(requoteCase -> Arguments.of(requoteCase.as(), requoteCase));
+		}
+
+		private record RequoteCase(String as, SizeQuotingConvention<SizeQuotingUnit.Units> sourceConvention,
+		                           long sourceRawValue, SizeQuotingConvention<SizeQuotingUnit.Units> targetConvention,
+		                           long expectedRawValue)
+		{
+			private static RequoteCase of(final String as,
+			                              final SizeQuotingConvention<SizeQuotingUnit.Units> sourceConvention,
+			                              final long sourceRawValue,
+			                              final SizeQuotingConvention<SizeQuotingUnit.Units> targetConvention,
+			                              final long expectedRawValue)
+			{
+				return new RequoteCase(as, sourceConvention, sourceRawValue, targetConvention, expectedRawValue);
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName("when scaling by an integer")
 	final class WhenScalingByAnInteger
 	{

@@ -8,11 +8,14 @@ import de.gupta.metis.core.types.money.MoneyTypeFactory;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
 import de.gupta.metis.core.types.price.PriceType;
 import de.gupta.metis.core.types.price.PriceTypeFactory;
+import de.gupta.metis.core.types.price.quoted.QuotedPrice;
+import de.gupta.metis.core.types.price.quoted.QuotedPriceFactory;
 import de.gupta.metis.core.types.quoting.CurrencyPriceUnit;
 import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
 import de.gupta.metis.core.types.quoting.SizeQuotingConvention;
 import de.gupta.metis.core.types.size.SizeType;
 import de.gupta.metis.core.types.size.SizeTypeFactory;
+import de.gupta.metis.core.types.size.quoted.QuotedSize;
 
 public final class MoneyArithmetic
 {
@@ -43,6 +46,17 @@ public final class MoneyArithmetic
 		                .metamorphose(scaled -> scaled.quotient(size.value()))
 		                .metamorphose(PriceTypeFactory::of)
 		                .decree(MissingInputException.from("Missing money or size"));
+	}
+
+	public static <C extends Currency> QuotedPrice<CurrencyPriceUnit<C>> divide(
+			final MoneyType<C> money,
+			final QuotedSize<?> size,
+			final PriceQuotingConvention<CurrencyPriceUnit<C>> outputPriceConvention)
+	{
+		var sourcePriceConvention = PriceQuotingConvention.currency(money.currency());
+
+		return QuotedPriceFactory.of(divide(money, size.size(), size.convention()), sourcePriceConvention)
+		                         .requote(outputPriceConvention);
 	}
 
 	public static <C extends Currency> SizeType divide(

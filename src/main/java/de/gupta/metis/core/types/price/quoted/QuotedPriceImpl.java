@@ -7,6 +7,7 @@ import de.gupta.metis.core.types.price.PriceType;
 import de.gupta.metis.core.types.price.PriceTypeFactory;
 import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
 import de.gupta.metis.core.types.quoting.PriceQuotingUnit;
+import de.gupta.metis.core.types.quoting.utility.QuotingConventionRequoting;
 
 final class QuotedPriceImpl<U extends PriceQuotingUnit> implements QuotedPrice<U>
 {
@@ -61,6 +62,13 @@ final class QuotedPriceImpl<U extends PriceQuotingUnit> implements QuotedPrice<U
 	public PriceQuotingConvention<U> convention()
 	{
 		return convention;
+	}
+
+	@Override
+	public QuotedPrice<U> requote(final PriceQuotingConvention<U> targetConvention)
+	{
+		return of(PriceTypeFactory.of(QuotingConventionRequoting.requote(price.value(), convention, targetConvention)),
+				targetConvention);
 	}
 
 	@Override

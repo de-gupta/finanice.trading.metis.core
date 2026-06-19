@@ -5,10 +5,12 @@ import de.gupta.metis.core.types.currency.Currency;
 import de.gupta.metis.core.types.money.MoneyTypeFactory;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
 import de.gupta.metis.core.types.price.PriceTypeFactory;
+import de.gupta.metis.core.types.quoting.CurrencyPriceUnit;
 import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
 import de.gupta.metis.core.types.quoting.SizeQuotingConvention;
 import de.gupta.metis.core.types.quoting.SizeQuotingUnit;
 import de.gupta.metis.core.types.size.SizeTypeFactory;
+import de.gupta.metis.core.types.size.quoted.QuotedSizeFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -177,6 +179,60 @@ final class MoneyArithmeticDivideTest
 	}
 
 	// ── Money / Price = Size ──────────────────────────────────────────────────
+
+	@Nested
+	@DisplayName("when dividing money by quoted size")
+	final class WhenDividingMoneyByQuotedSize
+	{
+		@Test
+		@DisplayName("returns quoted price using the quoted size convention directly")
+		void returnsQuotedPriceUsingTheQuotedSizeConventionDirectly()
+		{
+			var money = MoneyTypeFactory.of(11_250_000L, Currency.USD.INSTANCE);
+			var size = QuotedSizeFactory.of(250_000_000L, SizeQuotingConvention.units(8));
+			var outputPriceConvention = PriceQuotingConvention.currency(Currency.USD.INSTANCE);
+
+			var result = MoneyArithmetic.divide(money, size, outputPriceConvention);
+
+			assertThat(result.price().value().compare(PriceTypeFactory.of(4_500_000L).value()))
+					.as("$112,500 / 2.5 BTC should produce raw USD price 4,500,000")
+					.isEqualTo(OrderRelation.EQUAL);
+			assertThat(result.convention())
+					.as("result convention")
+					.isEqualTo(outputPriceConvention);
+		}
+
+		@Test
+		@DisplayName("requotes the canonical currency price into the requested output convention")
+		void requotesTheCanonicalCurrencyPriceIntoTheRequestedOutputConvention()
+		{
+			var money = MoneyTypeFactory.of(11_250_000L, Currency.USD.INSTANCE);
+			var size = QuotedSizeFactory.of(250_000_000L, SizeQuotingConvention.units(8));
+			var outputPriceConvention = new PriceQuotingConvention<>(new CurrencyPriceUnit<>(Currency.USD.INSTANCE), 3);
+
+			var result = MoneyArithmetic.divide(money, size, outputPriceConvention);
+
+			assertThat(result.price().value().compare(PriceTypeFactory.of(45_000_000L).value()))
+					.as("$45,000 at canonical scale 2 requoted to scale 3 becomes raw value 45,000,000")
+					.isEqualTo(OrderRelation.EQUAL);
+			assertThat(result.convention())
+					.as("result convention")
+					.isEqualTo(outputPriceConvention);
+		}
+
+		@Test
+		@DisplayName("throws arithmetic exception for zero quoted size")
+		void throwsArithmeticExceptionForZeroQuotedSize()
+		{
+			var money = MoneyTypeFactory.of(10_000L, Currency.USD.INSTANCE);
+			var size = QuotedSizeFactory.zero(SizeQuotingConvention.units(0));
+
+			assertThatThrownBy(() -> MoneyArithmetic.divide(money, size, PriceQuotingConvention.currency(
+					Currency.USD.INSTANCE)))
+					.as("dividing by zero quoted size should throw ArithmeticException")
+					.isInstanceOf(ArithmeticException.class);
+		}
+	}
 
 	@Nested
 	@DisplayName("when dividing USD money by a USD price (whole-unit size)")

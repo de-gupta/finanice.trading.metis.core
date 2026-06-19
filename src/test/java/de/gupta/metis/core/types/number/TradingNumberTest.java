@@ -110,9 +110,7 @@ final class TradingNumberTest
 		{
 			var result = TradingNumberFactory.of(value).norm();
 
-			assertThat(result.compare(TradingNumberFactory.of(expectedNorm)))
-					.as(as)
-					.isEqualTo(OrderRelation.EQUAL);
+			assertThat(result).as(as).isEqualTo(expectedNorm);
 		}
 
 		private static Stream<Arguments> normCases()

@@ -3,7 +3,10 @@ package de.gupta.metis.core.types.arithmetic;
 import de.gupta.aletheia.collection.Dyad;
 import de.gupta.aletheia.functional.Unfolding;
 import de.gupta.commons.utility.math.algebra.element.binary.notation.additive.Zero;
-import de.gupta.commons.utility.math.algebra.structure.binary.notation.additive.AdditiveAbelianGroupStructure;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegerEuclideanDomain;
+import de.gupta.commons.utility.math.algebra.structure.module.ModuleStructure;
+import de.gupta.commons.utility.math.algebra.structure.ring.RingStructure;
+import de.gupta.commons.utility.math.algebra.structure.ring.standard.IntegerEuclideanDomainStructure;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.commons.utility.math.ordering.structure.TotalOrderStructure;
 import de.gupta.metis.core.types.exception.IncompatibleInputException;
@@ -14,7 +17,7 @@ import de.gupta.metis.core.types.quoting.QuotingConvention;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements AdditiveAbelianGroupStructure<E>,
+final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements ModuleStructure<E, IntegerEuclideanDomain>,
 		TotalOrderStructure<E>
 {
 	private final int scaleDifference;
@@ -56,6 +59,18 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 	public E zero()
 	{
 		return factory.apply(TradingNumberFactory.zero());
+	}
+
+	@Override
+	public RingStructure<IntegerEuclideanDomain> scalars()
+	{
+		return IntegerEuclideanDomainStructure.INSTANCE;
+	}
+
+	@Override
+	public E scale(final IntegerEuclideanDomain scalar, final E e)
+	{
+		return factory.apply(extractor.apply(e).scale(scalar));
 	}
 
 	private <R> R scaleAndApply(

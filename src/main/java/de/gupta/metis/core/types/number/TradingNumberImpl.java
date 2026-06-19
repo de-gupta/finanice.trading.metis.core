@@ -1,5 +1,6 @@
 package de.gupta.metis.core.types.number;
 
+import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegerEuclideanDomain;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 
@@ -69,9 +70,9 @@ final class TradingNumberImpl implements TradingNumber
 	}
 
 	@Override
-	public TradingNumber norm()
+	public long norm()
 	{
-		return from(Math.abs(value));
+		return Math.absExact(value);
 	}
 
 	@Override
@@ -87,6 +88,12 @@ final class TradingNumberImpl implements TradingNumber
 	public String toString()
 	{
 		return Long.toString(value);
+	}
+
+	@Override
+	public TradingNumber scale(final IntegerEuclideanDomain scalar)
+	{
+		return from(Math.multiplyExact(value, scalar.value()));
 	}
 
 	private TradingNumberImpl(final long value)

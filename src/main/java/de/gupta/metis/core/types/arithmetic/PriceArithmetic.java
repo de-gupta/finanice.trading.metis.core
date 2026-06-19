@@ -1,14 +1,17 @@
 package de.gupta.metis.core.types.arithmetic;
 
-import de.gupta.commons.utility.math.algebra.structure.binary.notation.additive.AdditiveAbelianGroupStructure;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegerEuclideanDomain;
+import de.gupta.commons.utility.math.algebra.structure.module.ModuleStructure;
+import de.gupta.commons.utility.math.algebra.structure.ring.RingStructure;
+import de.gupta.commons.utility.math.algebra.structure.ring.standard.IntegerEuclideanDomainStructure;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.commons.utility.math.ordering.structure.TotalOrderStructure;
 import de.gupta.metis.core.types.price.PriceType;
 import de.gupta.metis.core.types.price.PriceTypeFactory;
 import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
 
-public final class PriceArithmetic
-		implements AdditiveAbelianGroupStructure<PriceType>, TotalOrderStructure<PriceType>
+public final class PriceArithmetic implements ModuleStructure<PriceType, IntegerEuclideanDomain>,
+		TotalOrderStructure<PriceType>
 {
 	private final QuotingConventionAwareArithmetic<PriceType> delegate;
 
@@ -44,6 +47,18 @@ public final class PriceArithmetic
 	public OrderRelation compare(final PriceType left, final PriceType right)
 	{
 		return delegate.compare(left, right);
+	}
+
+	@Override
+	public RingStructure<IntegerEuclideanDomain> scalars()
+	{
+		return IntegerEuclideanDomainStructure.INSTANCE;
+	}
+
+	@Override
+	public PriceType scale(final IntegerEuclideanDomain scalar, final PriceType priceType)
+	{
+		return delegate.scale(scalar, priceType);
 	}
 
 	private PriceArithmetic(final PriceQuotingConvention<?> left, final PriceQuotingConvention<?> right)

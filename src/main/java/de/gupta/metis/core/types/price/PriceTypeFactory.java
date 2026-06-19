@@ -5,6 +5,16 @@ import de.gupta.metis.core.types.number.TradingNumberFactory;
 
 public final class PriceTypeFactory
 {
+	public static PriceType zero()
+	{
+		return of(0);
+	}
+
+	public static PriceType of(final int value)
+	{
+		return of((long) value);
+	}
+
 	public static PriceType of(final long value)
 	{
 		return of(TradingNumberFactory.of(value));
@@ -13,11 +23,6 @@ public final class PriceTypeFactory
 	public static PriceType of(final TradingNumber value)
 	{
 		return PriceTypeImpl.of(value);
-	}
-
-	public static PriceType zero()
-	{
-		return PriceTypeImpl.of(TradingNumberFactory.zero());
 	}
 
 

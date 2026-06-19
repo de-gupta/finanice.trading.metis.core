@@ -15,6 +15,12 @@ public final class PriceTypeFactory
 		return PriceTypeImpl.of(value);
 	}
 
+	public static PriceType zero()
+	{
+		return PriceTypeImpl.of(TradingNumberFactory.zero());
+	}
+
+
 	private PriceTypeFactory()
 	{
 	}

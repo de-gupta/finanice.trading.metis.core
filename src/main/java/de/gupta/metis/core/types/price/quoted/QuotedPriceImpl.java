@@ -34,7 +34,7 @@ final class QuotedPriceImpl<U extends PriceQuotingUnit> implements QuotedPrice<U
 	@Override
 	public QuotedPrice<U> add(final QuotedPrice<U> other)
 	{
-		return with(delegate.add(price, other.price()));
+		return with(PriceArithmetic.of(convention, other.convention()).add(price, other.price()));
 	}
 
 	@Override

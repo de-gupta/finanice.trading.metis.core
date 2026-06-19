@@ -107,15 +107,15 @@ final class MoneyArithmeticDivideTest
 		}
 
 		@Test
-		@DisplayName("truncates negative division toward zero")
+		@DisplayName("truncates negative division away from zero")
 		void truncatesNegativeDivisionTowardZero()
 		{
 			var money = MoneyTypeFactory.of(TradingNumberFactory.of(-500L), Currency.USD.INSTANCE);
 
 			var result = MoneyArithmetic.divide(money, SizeTypeFactory.of(3L), SizeQuotingConvention.units(0));
 
-			assertThat(result.value().compare(PriceTypeFactory.of(-166L).value()))
-					.as("-$5.00 / 3 units = -$1.66 (truncated, not -$1.67)")
+			assertThat(result.value().compare(PriceTypeFactory.of(-167L).value()))
+					.as("-$5.00 / 3 units = -$1.67 (rounded up so that remainder is positive, not -$1.66)")
 					.isEqualTo(OrderRelation.EQUAL);
 		}
 	}

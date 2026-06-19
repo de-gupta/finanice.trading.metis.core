@@ -4,11 +4,11 @@ import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegerEuclid
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.metis.core.types.arithmetic.PriceArithmetic;
 import de.gupta.metis.core.types.price.PriceType;
+import de.gupta.metis.core.types.price.PriceTypeFactory;
 import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
 import de.gupta.metis.core.types.quoting.PriceQuotingUnit;
 
-final class QuotedPriceImpl<U extends PriceQuotingUnit>
-		implements QuotedPrice<U>
+final class QuotedPriceImpl<U extends PriceQuotingUnit> implements QuotedPrice<U>
 {
 	private final PriceType price;
 	private final PriceQuotingConvention<U> convention;
@@ -64,7 +64,7 @@ final class QuotedPriceImpl<U extends PriceQuotingUnit>
 	@Override
 	public DivisionResult<QuotedPrice<U>> divide(final int divisor)
 	{
-		return null;
+		return price.value().divide(divisor).map(value -> with(PriceTypeFactory.of(value)));
 	}
 
 	QuotedPriceImpl(final PriceType price, final PriceQuotingConvention<U> convention)

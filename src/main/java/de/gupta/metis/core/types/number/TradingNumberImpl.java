@@ -2,12 +2,15 @@ package de.gupta.metis.core.types.number;
 
 import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegerEuclideanDomain;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
+import de.gupta.commons.utility.math.algebra.structure.ring.EuclideanDomainStructure;
+import de.gupta.commons.utility.math.algebra.structure.ring.standard.LongEuclideanDomainStructure;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 
 final class TradingNumberImpl implements TradingNumber
 {
 	private static final TradingNumber ZERO = new TradingNumberImpl(0);
 	private static final TradingNumber ONE = new TradingNumberImpl(1);
+	private static final EuclideanDomainStructure<Long> canonical = LongEuclideanDomainStructure.INSTANCE;
 
 	private final long value;
 
@@ -41,14 +44,14 @@ final class TradingNumberImpl implements TradingNumber
 	{
 		return switch (other)
 		{
-			case TradingNumberImpl w -> from(Math.addExact(value, w.value));
+			case TradingNumberImpl w -> from(canonical.add(value, w.value));
 		};
 	}
 
 	@Override
 	public TradingNumber negate()
 	{
-		return from(Math.negateExact(value));
+		return from(canonical.negate(value));
 	}
 
 	@Override
@@ -56,8 +59,14 @@ final class TradingNumberImpl implements TradingNumber
 	{
 		return switch (other)
 		{
-			case TradingNumberImpl w -> from(Math.multiplyExact(value, w.value));
+			case TradingNumberImpl w -> from(canonical.multiply(value, w.value));
 		};
+	}
+
+	@Override
+	public long norm()
+	{
+		return canonical.norm(value);
 	}
 
 	@Override
@@ -65,14 +74,8 @@ final class TradingNumberImpl implements TradingNumber
 	{
 		return switch (other)
 		{
-			case TradingNumberImpl w -> DivisionResult.of(from(value / w.value), from(value % w.value));
+			case TradingNumberImpl w -> canonical.divideWithRemainder(value, w.value).map(TradingNumberFactory::of);
 		};
-	}
-
-	@Override
-	public long norm()
-	{
-		return Math.absExact(value);
 	}
 
 	@Override
@@ -94,6 +97,12 @@ final class TradingNumberImpl implements TradingNumber
 	public TradingNumber scale(final IntegerEuclideanDomain scalar)
 	{
 		return from(Math.multiplyExact(value, scalar.value()));
+	}
+
+	@Override
+	public DivisionResult<TradingNumber> divide(final int divisor)
+	{
+		return divideWithRemainder(TradingNumberFactory.of(divisor));
 	}
 
 	private TradingNumberImpl(final long value)

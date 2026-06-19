@@ -34,7 +34,7 @@ final class QuotedSizeImpl<U extends SizeQuotingUnit> implements QuotedSize<U>
 	@Override
 	public QuotedSize<U> add(final QuotedSize<U> other)
 	{
-		return with(delegate.add(size, other.size()));
+		return with(SizeArithmetic.of(convention, other.convention()).add(size, other.size()));
 	}
 
 	@Override

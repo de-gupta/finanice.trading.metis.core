@@ -68,7 +68,7 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>> implements Addit
 	}
 
 	@SuppressWarnings("unused")
-	// Alternative elegant implementation of scaleAndApply
+	// Alternative elegant but slow implementation of scaleAndApply
 	private <R> R operateRespectingScale(
 			final TradingNumber left, final TradingNumber right,
 			final BiFunction<TradingNumber, TradingNumber, R> operation)

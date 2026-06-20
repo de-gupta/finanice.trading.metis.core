@@ -2,6 +2,7 @@ package de.gupta.metis.core.types.price.quoted;
 
 import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegersAsEuclideanDomain;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
+import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.arithmetic.PriceArithmetic;
 import de.gupta.metis.core.types.price.PriceType;
 import de.gupta.metis.core.types.price.PriceTypeFactory;
@@ -53,15 +54,15 @@ final class QuotedPriceImpl<U extends PriceQuotingUnit> implements QuotedPrice<U
 	}
 
 	@Override
-	public PriceType price()
+	public OrderRelation compare(final QuotedPrice<U> other)
 	{
-		return price;
+		return PriceArithmetic.of(convention(), other.convention()).compare(price(), other.price());
 	}
 
 	@Override
-	public PriceQuotingConvention<U> convention()
+	public PriceType price()
 	{
-		return convention;
+		return price;
 	}
 
 	@Override
@@ -75,6 +76,12 @@ final class QuotedPriceImpl<U extends PriceQuotingUnit> implements QuotedPrice<U
 	public DivisionResult<QuotedPrice<U>> divide(final int divisor)
 	{
 		return price.value().divide(divisor).map(value -> with(PriceTypeFactory.of(value)));
+	}
+
+	@Override
+	public PriceQuotingConvention<U> convention()
+	{
+		return convention;
 	}
 
 	QuotedPriceImpl(final PriceType price, final PriceQuotingConvention<U> convention)

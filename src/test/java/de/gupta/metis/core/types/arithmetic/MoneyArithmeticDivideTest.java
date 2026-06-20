@@ -166,15 +166,15 @@ final class MoneyArithmeticDivideTest
 	final class WhenSizeIsZero
 	{
 		@Test
-		@DisplayName("throws arithmetic exception for division by zero")
-		void throwsArithmeticExceptionForDivisionByZero()
+		@DisplayName("throws Illegal Argument exception for division by zero")
+		void throwsIllegalArgumentExceptionForDivisionByZero()
 		{
 			var money = MoneyTypeFactory.of(TradingNumberFactory.of(10000L), Currency.USD.INSTANCE);
 
 			assertThatThrownBy(
 					() -> MoneyArithmetic.divide(money, SizeTypeFactory.of(0L), SizeQuotingConvention.units(0)))
 					.as("dividing by zero size should throw ArithmeticException")
-					.isInstanceOf(ArithmeticException.class);
+					.isInstanceOf(IllegalArgumentException.class);
 		}
 	}
 
@@ -221,8 +221,8 @@ final class MoneyArithmeticDivideTest
 		}
 
 		@Test
-		@DisplayName("throws arithmetic exception for zero quoted size")
-		void throwsArithmeticExceptionForZeroQuotedSize()
+		@DisplayName("throws Illegal argument exception for zero quoted size")
+		void throwsIllegalArgumentExceptionForZeroQuotedSize()
 		{
 			var money = MoneyTypeFactory.of(10_000L, Currency.USD.INSTANCE);
 			var size = QuotedSizeFactory.zero(SizeQuotingConvention.units(0));
@@ -230,7 +230,7 @@ final class MoneyArithmeticDivideTest
 			assertThatThrownBy(() -> MoneyArithmetic.divide(money, size, PriceQuotingConvention.currency(
 					Currency.USD.INSTANCE)))
 					.as("dividing by zero quoted size should throw ArithmeticException")
-					.isInstanceOf(ArithmeticException.class);
+					.isInstanceOf(IllegalArgumentException.class);
 		}
 	}
 

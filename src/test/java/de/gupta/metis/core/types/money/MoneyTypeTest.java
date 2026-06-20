@@ -3,6 +3,10 @@ package de.gupta.metis.core.types.money;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.currency.Currency;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
+import de.gupta.metis.core.types.quoting.CurrencyPriceUnit;
+import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
+import de.gupta.metis.core.types.quoting.SizeQuotingConvention;
+import de.gupta.metis.core.types.size.quoted.QuotedSizeFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,6 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("MoneyType")
 final class MoneyTypeTest
@@ -127,6 +132,59 @@ final class MoneyTypeTest
 					Arguments.of("-100 + 50 = -50", -100L, 50L, -50L),
 					Arguments.of("100 + -100 = 0", 100L, -100L, 0L)
 			);
+		}
+	}
+
+	@Nested
+	@DisplayName("when expressing money as price per quoted size")
+	final class WhenExpressingMoneyAsPricePerQuotedSize
+	{
+		@Test
+		@DisplayName("returns quoted price with the requested output convention")
+		void returnsQuotedPriceWithTheRequestedOutputConvention()
+		{
+			var money = usd(11_250_000L);
+			var size = QuotedSizeFactory.of(250_000_000L, SizeQuotingConvention.units(8));
+			var outputPriceConvention = PriceQuotingConvention.currency(Currency.USD.INSTANCE);
+
+			var result = money.asPricePer(size, outputPriceConvention);
+
+			assertThat(result.price().value().compare(TradingNumberFactory.of(4_500_000L)))
+					.as("raw USD price")
+					.isEqualTo(OrderRelation.EQUAL);
+			assertThat(result.convention())
+					.as("output convention")
+					.isEqualTo(outputPriceConvention);
+		}
+
+		@Test
+		@DisplayName("requotes the result into a non-canonical currency price convention")
+		void requotesTheResultIntoANonCanonicalCurrencyPriceConvention()
+		{
+			var money = usd(11_250_000L);
+			var size = QuotedSizeFactory.of(250_000_000L, SizeQuotingConvention.units(8));
+			var outputPriceConvention = new PriceQuotingConvention<>(new CurrencyPriceUnit<>(Currency.USD.INSTANCE), 3);
+
+			var result = money.asPricePer(size, outputPriceConvention);
+
+			assertThat(result.price().value().compare(TradingNumberFactory.of(45_000_000L)))
+					.as("raw USD price at scale 3")
+					.isEqualTo(OrderRelation.EQUAL);
+			assertThat(result.convention())
+					.as("output convention")
+					.isEqualTo(outputPriceConvention);
+		}
+
+		@Test
+		@DisplayName("throws illegal argument exception for zero quoted size")
+		void throwsIllegalArgumentExceptionForZeroQuotedSize()
+		{
+			var money = usd(10_000L);
+			var size = QuotedSizeFactory.zero(SizeQuotingConvention.units(0));
+
+			assertThatThrownBy(() -> money.asPricePer(size, PriceQuotingConvention.currency(Currency.USD.INSTANCE)))
+					.as("dividing by zero quoted size")
+					.isInstanceOf(IllegalArgumentException.class);
 		}
 	}
 

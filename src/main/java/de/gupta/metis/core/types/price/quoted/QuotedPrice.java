@@ -24,6 +24,11 @@ public sealed interface QuotedPrice<U extends PriceQuotingUnit> extends Module<Q
 
 	DivisionResult<QuotedPrice<U>> divide(final int divisor);
 
+	default boolean isEqualTo(final QuotedPrice<U> other)
+	{
+		return compare(other) == OrderRelation.EQUAL;
+	}
+
 	@Override
 	default OrderRelation compare(final QuotedPrice<U> other)
 	{

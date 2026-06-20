@@ -24,7 +24,7 @@ public sealed interface QuotedSize<U extends SizeQuotingUnit> extends Module<Quo
 
 	default boolean isEqualTo(final QuotedSize<U> other)
 	{
-		return SizeArithmetic.of(convention(), other.convention()).compare(size(), other.size()) == OrderRelation.EQUAL;
+		return compare(other) == OrderRelation.EQUAL;
 	}
 
 	@Override

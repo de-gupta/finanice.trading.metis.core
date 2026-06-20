@@ -1,6 +1,5 @@
 module de.gupta.metis.core.types
 {
-//	exports de.gupta.metis.core.types.number;
 	exports de.gupta.metis.core.types.currency;
 
 	exports de.gupta.metis.core.types.quoting;
@@ -10,7 +9,6 @@ module de.gupta.metis.core.types
 	exports de.gupta.metis.core.types.size.quoted;
 
 	exports de.gupta.metis.core.types.money;
-	exports de.gupta.metis.core.types.arithmetic;
 
 	exports de.gupta.metis.core.types.exception;
 

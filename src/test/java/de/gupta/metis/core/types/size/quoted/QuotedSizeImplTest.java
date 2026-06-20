@@ -234,6 +234,95 @@ final class QuotedSizeImplTest
 	}
 
 	@Nested
+	@DisplayName("when checking whether the quoted size is zero")
+	final class WhenCheckingWhetherTheQuotedSizeIsZero
+	{
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsWhetherTheQuotedSizeIsZeroCases")
+		@DisplayName("returns whether the quoted size is zero")
+		void returnsWhetherTheQuotedSizeIsZero(final String as, final ZeroCase zeroCase)
+		{
+			var quotedSize = quotedSize(zeroCase.rawValue(), zeroCase.convention());
+
+			assertThat(quotedSize.isZero())
+					.as("%s - isZero()", as)
+					.isEqualTo(zeroCase.expected());
+		}
+
+		private static Stream<Arguments> returnsWhetherTheQuotedSizeIsZeroCases()
+		{
+			return Stream.of(
+					ZeroCase.of("zero raw value at whole-unit scale", 0L, SizeQuotingConvention.units(0), true),
+					ZeroCase.of("zero raw value at fractional scale", 0L, SizeQuotingConvention.units(8), true),
+					ZeroCase.of("positive raw value is not zero", 1L, SizeQuotingConvention.units(0), false),
+					ZeroCase.of("negative raw value is not zero", -1L, SizeQuotingConvention.units(3), false)
+			).map(zeroCase -> Arguments.of(zeroCase.as(), zeroCase));
+		}
+
+		private record ZeroCase(String as, long rawValue, SizeQuotingConvention<SizeQuotingUnit.Units> convention,
+		                        boolean expected)
+		{
+			private static ZeroCase of(final String as, final long rawValue,
+			                           final SizeQuotingConvention<SizeQuotingUnit.Units> convention,
+			                           final boolean expected)
+			{
+				return new ZeroCase(as, rawValue, convention, expected);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName("when checking whether quoted sizes are equal")
+	final class WhenCheckingWhetherQuotedSizesAreEqual
+	{
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsWhetherTheQuotedSizesAreEqualCases")
+		@DisplayName("returns whether the quoted sizes are equal")
+		void returnsWhetherTheQuotedSizesAreEqual(final String as, final EqualityCase equalityCase)
+		{
+			var left = quotedSize(equalityCase.leftRawValue(), equalityCase.leftConvention());
+			var right = quotedSize(equalityCase.rightRawValue(), equalityCase.rightConvention());
+
+			assertThat(left.isEqualTo(right))
+					.as("%s - left.isEqualTo(right)", as)
+					.isEqualTo(equalityCase.expected());
+			assertThat(right.isEqualTo(left))
+					.as("%s - right.isEqualTo(left)", as)
+					.isEqualTo(equalityCase.expected());
+		}
+
+		private static Stream<Arguments> returnsWhetherTheQuotedSizesAreEqualCases()
+		{
+			return Stream.of(
+					EqualityCase.of("same convention and same raw value", 450L, SizeQuotingConvention.units(2),
+							450L, SizeQuotingConvention.units(2), true),
+					EqualityCase.of("different scales with the same represented value", 45L,
+							SizeQuotingConvention.units(2), 450L, SizeQuotingConvention.units(3), true),
+					EqualityCase.of("different scales with different represented values", 45L,
+							SizeQuotingConvention.units(2), 451L, SizeQuotingConvention.units(3), false),
+					EqualityCase.of("negative values compare equal across scales", -45L,
+							SizeQuotingConvention.units(2), -450L, SizeQuotingConvention.units(3), true),
+					EqualityCase.of("zero compares equal across scales", 0L,
+							SizeQuotingConvention.units(0), 0L, SizeQuotingConvention.units(8), true)
+			).map(equalityCase -> Arguments.of(equalityCase.as(), equalityCase));
+		}
+
+		private record EqualityCase(String as, long leftRawValue,
+		                            SizeQuotingConvention<SizeQuotingUnit.Units> leftConvention, long rightRawValue,
+		                            SizeQuotingConvention<SizeQuotingUnit.Units> rightConvention, boolean expected)
+		{
+			private static EqualityCase of(final String as, final long leftRawValue,
+			                               final SizeQuotingConvention<SizeQuotingUnit.Units> leftConvention,
+			                               final long rightRawValue,
+			                               final SizeQuotingConvention<SizeQuotingUnit.Units> rightConvention,
+			                               final boolean expected)
+			{
+				return new EqualityCase(as, leftRawValue, leftConvention, rightRawValue, rightConvention, expected);
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName("when requoting")
 	final class WhenRequoting
 	{

@@ -11,4 +11,9 @@ public sealed interface MoneyType<C extends Currency>
 	TradingNumber value();
 
 	C currency();
+
+	default boolean isZero()
+	{
+		return value().isZero();
+	}
 }

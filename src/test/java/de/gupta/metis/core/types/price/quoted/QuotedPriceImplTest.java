@@ -172,6 +172,32 @@ final class QuotedPriceImplTest
 	}
 
 	@Nested
+	@DisplayName("when checking whether the quoted price is zero")
+	final class WhenCheckingWhetherTheQuotedPriceIsZero
+	{
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsWhetherTheQuotedPriceIsZeroCases")
+		@DisplayName("returns whether the quoted price is zero")
+		void returnsWhetherTheQuotedPriceIsZero(final String as, final long rawValue, final boolean expected)
+		{
+			var quotedPrice = ticks2(rawValue);
+
+			assertThat(quotedPrice.isZero())
+					.as("%s - isZero()", as)
+					.isEqualTo(expected);
+		}
+
+		private static Stream<Arguments> returnsWhetherTheQuotedPriceIsZeroCases()
+		{
+			return Stream.of(
+					Arguments.of("zero raw value", 0L, true),
+					Arguments.of("positive raw value", 1L, false),
+					Arguments.of("negative raw value", -1L, false)
+			);
+		}
+	}
+
+	@Nested
 	@DisplayName("when requoting")
 	final class WhenRequoting
 	{

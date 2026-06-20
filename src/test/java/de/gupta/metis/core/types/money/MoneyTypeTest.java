@@ -74,6 +74,32 @@ final class MoneyTypeTest
 	}
 
 	@Nested
+	@DisplayName("when checking whether the money is zero")
+	final class WhenCheckingWhetherTheMoneyIsZero
+	{
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsWhetherTheMoneyIsZeroCases")
+		@DisplayName("returns whether the money is zero")
+		void returnsWhetherTheMoneyIsZero(final String as, final long value, final boolean expected)
+		{
+			var money = usd(value);
+
+			assertThat(money.isZero())
+					.as("%s - isZero()", as)
+					.isEqualTo(expected);
+		}
+
+		private static Stream<Arguments> returnsWhetherTheMoneyIsZeroCases()
+		{
+			return Stream.of(
+					Arguments.of("zero raw value", 0L, true),
+					Arguments.of("positive raw value", 1L, false),
+					Arguments.of("negative raw value", -1L, false)
+			);
+		}
+	}
+
+	@Nested
 	@DisplayName("when adding")
 	final class WhenAdding
 	{

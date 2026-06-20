@@ -323,6 +323,59 @@ final class QuotedSizeImplTest
 	}
 
 	@Nested
+	@DisplayName("when comparing quoted sizes")
+	final class WhenComparingQuotedSizes
+	{
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsTheOrderRelationCases")
+		@DisplayName("returns the order relation")
+		void returnsTheOrderRelation(final String as, final ComparisonCase comparisonCase)
+		{
+			var left = quotedSize(comparisonCase.leftRawValue(), comparisonCase.leftConvention());
+			var right = quotedSize(comparisonCase.rightRawValue(), comparisonCase.rightConvention());
+
+			assertThat(left.compare(right))
+					.as("%s - left.compare(right)", as)
+					.isEqualTo(comparisonCase.expected());
+		}
+
+		private static Stream<Arguments> returnsTheOrderRelationCases()
+		{
+			return Stream.of(
+					ComparisonCase.of("same convention greater than", 451L, SizeQuotingConvention.units(2),
+							450L, SizeQuotingConvention.units(2), OrderRelation.GREATER_THAN),
+					ComparisonCase.of("same convention less than", 449L, SizeQuotingConvention.units(2),
+							450L, SizeQuotingConvention.units(2), OrderRelation.LESS_THAN),
+					ComparisonCase.of("same convention equal", 450L, SizeQuotingConvention.units(2),
+							450L, SizeQuotingConvention.units(2), OrderRelation.EQUAL),
+					ComparisonCase.of("different scales equal values", 45L, SizeQuotingConvention.units(2),
+							450L, SizeQuotingConvention.units(3), OrderRelation.EQUAL),
+					ComparisonCase.of("different scales left less", 45L, SizeQuotingConvention.units(2),
+							451L, SizeQuotingConvention.units(3), OrderRelation.LESS_THAN),
+					ComparisonCase.of("different scales left greater", 46L, SizeQuotingConvention.units(2),
+							451L, SizeQuotingConvention.units(3), OrderRelation.GREATER_THAN),
+					ComparisonCase.of("negative and positive", -1L, SizeQuotingConvention.units(0),
+							1L, SizeQuotingConvention.units(0), OrderRelation.LESS_THAN)
+			).map(comparisonCase -> Arguments.of(comparisonCase.as(), comparisonCase));
+		}
+
+		private record ComparisonCase(String as, long leftRawValue,
+		                              SizeQuotingConvention<SizeQuotingUnit.Units> leftConvention, long rightRawValue,
+		                              SizeQuotingConvention<SizeQuotingUnit.Units> rightConvention,
+		                              OrderRelation expected)
+		{
+			private static ComparisonCase of(final String as, final long leftRawValue,
+			                                 final SizeQuotingConvention<SizeQuotingUnit.Units> leftConvention,
+			                                 final long rightRawValue,
+			                                 final SizeQuotingConvention<SizeQuotingUnit.Units> rightConvention,
+			                                 final OrderRelation expected)
+			{
+				return new ComparisonCase(as, leftRawValue, leftConvention, rightRawValue, rightConvention, expected);
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName("when requoting")
 	final class WhenRequoting
 	{

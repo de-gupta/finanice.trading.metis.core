@@ -198,6 +198,111 @@ final class QuotedPriceImplTest
 	}
 
 	@Nested
+	@DisplayName("when checking whether quoted prices are equal")
+	final class WhenCheckingWhetherQuotedPricesAreEqual
+	{
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsWhetherTheQuotedPricesAreEqualCases")
+		@DisplayName("returns whether the quoted prices are equal")
+		void returnsWhetherTheQuotedPricesAreEqual(final String as, final EqualityCase equalityCase)
+		{
+			var left = quotedPrice(equalityCase.leftRawValue(), equalityCase.leftConvention());
+			var right = quotedPrice(equalityCase.rightRawValue(), equalityCase.rightConvention());
+
+			assertThat(left.isEqualTo(right))
+					.as("%s - left.isEqualTo(right)", as)
+					.isEqualTo(equalityCase.expected());
+			assertThat(right.isEqualTo(left))
+					.as("%s - right.isEqualTo(left)", as)
+					.isEqualTo(equalityCase.expected());
+		}
+
+		private static Stream<Arguments> returnsWhetherTheQuotedPricesAreEqualCases()
+		{
+			return Stream.of(
+					EqualityCase.of("same convention and same raw value", 450L, PriceQuotingConvention.ticks(2),
+							450L, PriceQuotingConvention.ticks(2), true),
+					EqualityCase.of("different scales with the same represented value", 45L,
+							PriceQuotingConvention.ticks(2), 450L, PriceQuotingConvention.ticks(3), true),
+					EqualityCase.of("different scales with different represented values", 45L,
+							PriceQuotingConvention.ticks(2), 451L, PriceQuotingConvention.ticks(3), false),
+					EqualityCase.of("negative values compare equal across scales", -45L,
+							PriceQuotingConvention.ticks(2), -450L, PriceQuotingConvention.ticks(3), true),
+					EqualityCase.of("zero compares equal across scales", 0L,
+							PriceQuotingConvention.ticks(0), 0L, PriceQuotingConvention.ticks(8), true)
+			).map(equalityCase -> Arguments.of(equalityCase.as(), equalityCase));
+		}
+
+		private record EqualityCase(String as, long leftRawValue,
+		                            PriceQuotingConvention<PriceQuotingUnit.Ticks> leftConvention, long rightRawValue,
+		                            PriceQuotingConvention<PriceQuotingUnit.Ticks> rightConvention, boolean expected)
+		{
+			private static EqualityCase of(final String as, final long leftRawValue,
+			                               final PriceQuotingConvention<PriceQuotingUnit.Ticks> leftConvention,
+			                               final long rightRawValue,
+			                               final PriceQuotingConvention<PriceQuotingUnit.Ticks> rightConvention,
+			                               final boolean expected)
+			{
+				return new EqualityCase(as, leftRawValue, leftConvention, rightRawValue, rightConvention, expected);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName("when comparing quoted prices")
+	final class WhenComparingQuotedPrices
+	{
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsTheOrderRelationCases")
+		@DisplayName("returns the order relation")
+		void returnsTheOrderRelation(final String as, final ComparisonCase comparisonCase)
+		{
+			var left = quotedPrice(comparisonCase.leftRawValue(), comparisonCase.leftConvention());
+			var right = quotedPrice(comparisonCase.rightRawValue(), comparisonCase.rightConvention());
+
+			assertThat(left.compare(right))
+					.as("%s - left.compare(right)", as)
+					.isEqualTo(comparisonCase.expected());
+		}
+
+		private static Stream<Arguments> returnsTheOrderRelationCases()
+		{
+			return Stream.of(
+					ComparisonCase.of("same convention greater than", 451L, PriceQuotingConvention.ticks(2),
+							450L, PriceQuotingConvention.ticks(2), OrderRelation.GREATER_THAN),
+					ComparisonCase.of("same convention less than", 449L, PriceQuotingConvention.ticks(2),
+							450L, PriceQuotingConvention.ticks(2), OrderRelation.LESS_THAN),
+					ComparisonCase.of("same convention equal", 450L, PriceQuotingConvention.ticks(2),
+							450L, PriceQuotingConvention.ticks(2), OrderRelation.EQUAL),
+					ComparisonCase.of("different scales equal values", 45L, PriceQuotingConvention.ticks(2),
+							450L, PriceQuotingConvention.ticks(3), OrderRelation.EQUAL),
+					ComparisonCase.of("different scales left less", 45L, PriceQuotingConvention.ticks(2),
+							451L, PriceQuotingConvention.ticks(3), OrderRelation.LESS_THAN),
+					ComparisonCase.of("different scales left greater", 46L, PriceQuotingConvention.ticks(2),
+							451L, PriceQuotingConvention.ticks(3), OrderRelation.GREATER_THAN),
+					ComparisonCase.of("negative and positive", -1L, PriceQuotingConvention.ticks(0),
+							1L, PriceQuotingConvention.ticks(0), OrderRelation.LESS_THAN)
+			).map(comparisonCase -> Arguments.of(comparisonCase.as(), comparisonCase));
+		}
+
+		private record ComparisonCase(String as, long leftRawValue,
+		                              PriceQuotingConvention<PriceQuotingUnit.Ticks> leftConvention,
+		                              long rightRawValue,
+		                              PriceQuotingConvention<PriceQuotingUnit.Ticks> rightConvention,
+		                              OrderRelation expected)
+		{
+			private static ComparisonCase of(final String as, final long leftRawValue,
+			                                 final PriceQuotingConvention<PriceQuotingUnit.Ticks> leftConvention,
+			                                 final long rightRawValue,
+			                                 final PriceQuotingConvention<PriceQuotingUnit.Ticks> rightConvention,
+			                                 final OrderRelation expected)
+			{
+				return new ComparisonCase(as, leftRawValue, leftConvention, rightRawValue, rightConvention, expected);
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName("when requoting")
 	final class WhenRequoting
 	{

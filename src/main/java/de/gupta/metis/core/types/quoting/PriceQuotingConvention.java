@@ -19,4 +19,10 @@ public record PriceQuotingConvention<U extends PriceQuotingUnit>(U unit, int sca
 	{
 		return new PriceQuotingConvention<>(new CurrencyPriceUnit<>(currency), currency.canonicalScale());
 	}
+
+	@Override
+	public String toString()
+	{
+		return "{" + unit + "e " + scale + '}';
+	}
 }

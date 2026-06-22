@@ -84,6 +84,12 @@ final class QuotedPriceImpl<U extends PriceQuotingUnit> implements QuotedPrice<U
 		return convention;
 	}
 
+	@Override
+	public String toString()
+	{
+		return "{" + price + ", " + convention + '}';
+	}
+
 	QuotedPriceImpl(final PriceType price, final PriceQuotingConvention<U> convention)
 	{
 		this.price = price;

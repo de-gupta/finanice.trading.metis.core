@@ -15,4 +15,10 @@ record PriceTypeImpl(TradingNumber value) implements PriceType
 	{
 		return of(TradingNumberFactory.zero());
 	}
+
+	@Override
+	public String toString()
+	{
+		return value.toString();
+	}
 }

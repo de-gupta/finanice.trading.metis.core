@@ -12,6 +12,8 @@ module de.gupta.metis.core.types
 
 	exports de.gupta.metis.core.types.exception;
 
+	exports de.gupta.metis.core.types.time;
+
 	requires de.gupta.athena;
 	requires de.gupta.aletheia;
 }

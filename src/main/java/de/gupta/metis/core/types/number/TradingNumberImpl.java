@@ -70,7 +70,7 @@ final class TradingNumberImpl implements TradingNumber
 	}
 
 	@Override
-	public DivisionResult<TradingNumber> divideWithRemainder(final TradingNumber other)
+	public DivisionResult<TradingNumber> divideFloor(final TradingNumber other)
 	{
 		return switch (other)
 		{

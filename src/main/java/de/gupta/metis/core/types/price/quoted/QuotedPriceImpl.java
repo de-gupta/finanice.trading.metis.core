@@ -4,7 +4,6 @@ import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegersAsEuc
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.arithmetic.PriceArithmetic;
-import de.gupta.metis.core.types.number.ScalarRoundingPolicyImpl;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
 import de.gupta.metis.core.types.price.PriceType;
 import de.gupta.metis.core.types.price.PriceTypeFactory;
@@ -84,8 +83,7 @@ final class QuotedPriceImpl<U extends PriceQuotingUnit> implements QuotedPrice<U
 	@Override
 	public QuotedPrice<U> divide(final int divisor, final ScalarRoundingPolicy policy)
 	{
-		return with(PriceTypeFactory.of(
-				ScalarRoundingPolicyImpl.apply(policy, price.value(), TradingNumberFactory.of(divisor))));
+		return with(PriceTypeFactory.of(price.value().quotient(TradingNumberFactory.of(divisor), policy)));
 	}
 
 	@Override

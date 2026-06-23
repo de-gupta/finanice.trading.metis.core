@@ -6,7 +6,6 @@ import de.gupta.metis.core.types.currency.Currency;
 import de.gupta.metis.core.types.exception.MissingInputException;
 import de.gupta.metis.core.types.money.MoneyType;
 import de.gupta.metis.core.types.money.MoneyTypeFactory;
-import de.gupta.metis.core.types.number.ScalarRoundingPolicyImpl;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
 import de.gupta.metis.core.types.price.PriceType;
 import de.gupta.metis.core.types.price.PriceTypeFactory;
@@ -88,7 +87,7 @@ public final class MoneyArithmetic
 		                .metamorphose(MoneyType::value)
 		                .metamorphose(
 								m -> m.multiply(TradingNumberFactory.of(Math.powExact(10L, sizeConvention.scale()))))
-		                .metamorphose(scaled -> ScalarRoundingPolicyImpl.apply(policy, scaled, size.value()))
+		                .metamorphose(scaled -> scaled.quotient(size.value(), policy))
 		                .metamorphose(PriceTypeFactory::of)
 		                .decree(MissingInputException.from("Missing money or size"));
 	}

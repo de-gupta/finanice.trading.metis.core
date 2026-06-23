@@ -19,20 +19,20 @@ record TimeTypeImpl(Instant value) implements TimeType
 	}
 
 	@Override
-	public TimeType shiftBy(final TimeDeltaType delta)
-	{
-		return switch (delta)
-		{
-			case TimeDeltaTypeImpl d -> new TimeTypeImpl(value.plus(d.asDuration()));
-		};
-	}
-
-	@Override
-	public TimeDeltaType distanceTo(final TimeType other)
+	public TimeDeltaType displacementTo(final TimeType other)
 	{
 		return switch (other)
 		{
 			case TimeTypeImpl t -> TimeDeltaTypeImpl.of(Duration.between(value, t.value));
+		};
+	}
+
+	@Override
+	public TimeType translate(final TimeDeltaType displacement)
+	{
+		return switch (displacement)
+		{
+			case TimeDeltaTypeImpl d -> new TimeTypeImpl(value.plus(d.asDuration()));
 		};
 	}
 

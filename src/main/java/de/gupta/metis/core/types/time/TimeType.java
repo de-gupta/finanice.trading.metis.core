@@ -1,17 +1,23 @@
 package de.gupta.metis.core.types.time;
 
-import de.gupta.commons.utility.math.ordering.element.TotallyOrdered;
+import de.gupta.commons.utility.math.ordering.element.AffinelyOrdered;
 
 import java.time.Instant;
 
-public sealed interface TimeType extends TotallyOrdered<TimeType>
+public sealed interface TimeType extends AffinelyOrdered<TimeType, TimeDeltaType>
 		permits TimeTypeImpl
 {
 	Instant asInstant();
 
-	TimeType shiftBy(TimeDeltaType delta);
+	default TimeDeltaType distanceTo(final TimeType other)
+	{
+		return displacementTo(other);
+	}
 
-	TimeDeltaType distanceTo(TimeType other);
+	default TimeType shiftBy(final TimeDeltaType delta)
+	{
+		return translate(delta);
+	}
 
 	default boolean isBefore(final TimeType other)
 	{

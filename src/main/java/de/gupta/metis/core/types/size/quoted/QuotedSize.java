@@ -8,6 +8,7 @@ import de.gupta.commons.utility.math.ordering.element.TotallyOrdered;
 import de.gupta.metis.core.types.arithmetic.SizeArithmetic;
 import de.gupta.metis.core.types.quoting.SizeQuotingConvention;
 import de.gupta.metis.core.types.quoting.SizeQuotingUnit;
+import de.gupta.metis.core.types.rounding.ScalarRoundingPolicy;
 import de.gupta.metis.core.types.size.SizeType;
 
 public sealed interface QuotedSize<U extends SizeQuotingUnit> extends Module<QuotedSize<U>,
@@ -36,4 +37,6 @@ public sealed interface QuotedSize<U extends SizeQuotingUnit> extends Module<Quo
 	QuotedSize<U> requote(final SizeQuotingConvention<U> targetConvention);
 
 	DivisionResult<QuotedSize<U>> divide(final int divisor);
+
+	QuotedSize<U> divide(final int divisor, final ScalarRoundingPolicy policy);
 }

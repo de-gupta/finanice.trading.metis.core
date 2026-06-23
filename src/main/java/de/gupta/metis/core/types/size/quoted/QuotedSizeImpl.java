@@ -3,9 +3,12 @@ package de.gupta.metis.core.types.size.quoted;
 import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegersAsEuclideanDomain;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.metis.core.types.arithmetic.SizeArithmetic;
+import de.gupta.metis.core.types.number.ScalarRoundingPolicyImpl;
+import de.gupta.metis.core.types.number.TradingNumberFactory;
 import de.gupta.metis.core.types.quoting.SizeQuotingConvention;
 import de.gupta.metis.core.types.quoting.SizeQuotingUnit;
 import de.gupta.metis.core.types.quoting.utility.QuotingConventionRequoting;
+import de.gupta.metis.core.types.rounding.ScalarRoundingPolicy;
 import de.gupta.metis.core.types.size.SizeType;
 import de.gupta.metis.core.types.size.SizeTypeFactory;
 
@@ -75,6 +78,13 @@ final class QuotedSizeImpl<U extends SizeQuotingUnit> implements QuotedSize<U>
 	public DivisionResult<QuotedSize<U>> divide(final int divisor)
 	{
 		return size.value().divide(divisor).map(value -> with(SizeTypeFactory.of(value)));
+	}
+
+	@Override
+	public QuotedSize<U> divide(final int divisor, final ScalarRoundingPolicy policy)
+	{
+		return with(SizeTypeFactory.of(
+				ScalarRoundingPolicyImpl.apply(policy, size.value(), TradingNumberFactory.of(divisor))));
 	}
 
 	QuotedSizeImpl(final SizeType size, final SizeQuotingConvention<U> convention)

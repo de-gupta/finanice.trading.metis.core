@@ -7,6 +7,7 @@ import de.gupta.commons.utility.math.ordering.element.TotallyOrdered;
 import de.gupta.metis.core.types.price.PriceType;
 import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
 import de.gupta.metis.core.types.quoting.PriceQuotingUnit;
+import de.gupta.metis.core.types.rounding.ScalarRoundingPolicy;
 
 public sealed interface QuotedPrice<U extends PriceQuotingUnit> extends Module<QuotedPrice<U>,
 		IntegersAsEuclideanDomain>, TotallyOrdered<QuotedPrice<U>> permits QuotedPriceImpl
@@ -21,6 +22,8 @@ public sealed interface QuotedPrice<U extends PriceQuotingUnit> extends Module<Q
 	QuotedPrice<U> requote(final PriceQuotingConvention<U> targetConvention);
 
 	DivisionResult<QuotedPrice<U>> divide(final int divisor);
+
+	QuotedPrice<U> divide(final int divisor, final ScalarRoundingPolicy policy);
 
 	PriceQuotingConvention<U> convention();
 }

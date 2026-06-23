@@ -14,6 +14,8 @@ module de.gupta.metis.core.types
 
 	exports de.gupta.metis.core.types.time;
 
+	exports de.gupta.metis.core.types.rounding;
+
 	requires de.gupta.athena;
 	requires de.gupta.aletheia;
 }

@@ -79,13 +79,7 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>>
 	@Override
 	public RationalNumber ratio(final E numerator, final E denominator)
 	{
-		var scaledNumerator = extractor.apply(numerator);
-		var scaledDenominator = extractor.apply(denominator);
-
-		if (scaleDifference > 0) scaledDenominator = scaledDenominator.multiply(scaleFactor(scaleDifference));
-		if (scaleDifference < 0) scaledNumerator = scaledNumerator.multiply(scaleFactor(-scaleDifference));
-
-		return scaledNumerator.ratio(scaledDenominator);
+		return scaleAndApply(extractor.apply(numerator), extractor.apply(denominator), TradingNumber::ratio);
 	}
 
 	private <R> R scaleAndApply(

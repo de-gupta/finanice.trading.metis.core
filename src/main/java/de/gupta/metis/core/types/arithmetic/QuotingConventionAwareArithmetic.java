@@ -3,7 +3,7 @@ package de.gupta.metis.core.types.arithmetic;
 import de.gupta.aletheia.collection.Dyad;
 import de.gupta.aletheia.functional.Unfolding;
 import de.gupta.commons.utility.math.algebra.element.binary.notation.additive.Zero;
-import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegersAsEuclideanDomain;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumber;
 import de.gupta.commons.utility.math.algebra.structure.module.ModuleStructure;
 import de.gupta.commons.utility.math.algebra.structure.ring.RingStructure;
 import de.gupta.commons.utility.math.algebra.structure.ring.standard.IntegerEuclideanDomainStructure;
@@ -18,7 +18,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 final class QuotingConventionAwareArithmetic<E extends Zero<E>>
-		implements ModuleStructure<E, IntegersAsEuclideanDomain>,
+		implements ModuleStructure<E, IntegralNumber>,
 		TotalOrderStructure<E>
 {
 	private final int scaleDifference;
@@ -63,13 +63,13 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>>
 	}
 
 	@Override
-	public RingStructure<IntegersAsEuclideanDomain> scalars()
+	public RingStructure<IntegralNumber> scalars()
 	{
 		return IntegerEuclideanDomainStructure.INSTANCE;
 	}
 
 	@Override
-	public E scale(final IntegersAsEuclideanDomain scalar, final E e)
+	public E scale(final IntegralNumber scalar, final E e)
 	{
 		return factory.apply(extractor.apply(e).scale(scalar));
 	}

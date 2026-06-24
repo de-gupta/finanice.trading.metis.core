@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.price.quoted;
 
-import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegersAsEuclideanDomain;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumber;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.arithmetic.PriceArithmetic;
@@ -50,7 +50,7 @@ final class QuotedPriceImpl<U extends PriceQuotingUnit> implements QuotedPrice<U
 	}
 
 	@Override
-	public QuotedPrice<U> scale(final IntegersAsEuclideanDomain scalar)
+	public QuotedPrice<U> scale(final IntegralNumber scalar)
 	{
 		return with(delegate.scale(scalar, price));
 	}

@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.size.quoted;
 
-import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegersAsEuclideanDomain;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumber;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.metis.core.types.arithmetic.SizeArithmetic;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
@@ -49,7 +49,7 @@ final class QuotedSizeImpl<U extends SizeQuotingUnit> implements QuotedSize<U>
 	}
 
 	@Override
-	public QuotedSize<U> scale(final IntegersAsEuclideanDomain scalar)
+	public QuotedSize<U> scale(final IntegralNumber scalar)
 	{
 		return with(delegate.scale(scalar, size));
 	}

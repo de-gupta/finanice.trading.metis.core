@@ -1,16 +1,14 @@
 package de.gupta.metis.core.types.number;
 
-import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegersAsEuclideanDomain;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumber;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumberFactory;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
-import de.gupta.commons.utility.math.algebra.structure.ring.EuclideanDomainStructure;
-import de.gupta.commons.utility.math.algebra.structure.ring.standard.IntegersEuclideanDomainStructure;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 
 final class TradingNumberImpl implements TradingNumber
 {
 	private static final TradingNumber ZERO = new TradingNumberImpl(0);
 	private static final TradingNumber ONE = new TradingNumberImpl(1);
-	private static final EuclideanDomainStructure<Long> canonical = IntegersEuclideanDomainStructure.INSTANCE;
 
 	private final long value;
 
@@ -44,14 +42,15 @@ final class TradingNumberImpl implements TradingNumber
 	{
 		return switch (other)
 		{
-			case TradingNumberImpl w -> from(canonical.add(value, w.value));
+			case TradingNumberImpl w ->
+					from(IntegralNumberFactory.of(value).add(IntegralNumberFactory.of(w.value)).value());
 		};
 	}
 
 	@Override
 	public TradingNumber negate()
 	{
-		return from(canonical.negate(value));
+		return from(IntegralNumberFactory.of(value).negate().value());
 	}
 
 	@Override
@@ -59,14 +58,15 @@ final class TradingNumberImpl implements TradingNumber
 	{
 		return switch (other)
 		{
-			case TradingNumberImpl w -> from(canonical.multiply(value, w.value));
+			case TradingNumberImpl w ->
+					from(IntegralNumberFactory.of(value).multiply(IntegralNumberFactory.of(w.value)).value());
 		};
 	}
 
 	@Override
 	public long norm()
 	{
-		return canonical.norm(value);
+		return IntegralNumberFactory.of(value).norm();
 	}
 
 	@Override
@@ -74,7 +74,10 @@ final class TradingNumberImpl implements TradingNumber
 	{
 		return switch (other)
 		{
-			case TradingNumberImpl w -> canonical.divideWithRemainder(value, w.value).map(TradingNumberFactory::of);
+//			case TradingNumberImpl w -> canonical.divideWithRemainder(value, w.value).map(TradingNumberFactory::of);
+			case TradingNumberImpl w -> IntegralNumberFactory.of(value).divideFloor(IntegralNumberFactory.of(w.value))
+			                                                 .map(IntegralNumber::value)
+			                                                 .map(TradingNumberFactory::of);
 		};
 	}
 
@@ -94,7 +97,7 @@ final class TradingNumberImpl implements TradingNumber
 	}
 
 	@Override
-	public TradingNumber scale(final IntegersAsEuclideanDomain scalar)
+	public TradingNumber scale(final IntegralNumber scalar)
 	{
 		return from(Math.multiplyExact(value, scalar.value()));
 	}

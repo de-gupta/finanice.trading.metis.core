@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.arithmetic;
 
-import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegersAsEuclideanDomain;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumber;
 import de.gupta.commons.utility.math.algebra.structure.module.ModuleStructure;
 import de.gupta.commons.utility.math.algebra.structure.ring.RingStructure;
 import de.gupta.commons.utility.math.algebra.structure.ring.standard.IntegerEuclideanDomainStructure;
@@ -10,7 +10,7 @@ import de.gupta.metis.core.types.price.PriceType;
 import de.gupta.metis.core.types.price.PriceTypeFactory;
 import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
 
-public final class PriceArithmetic implements ModuleStructure<PriceType, IntegersAsEuclideanDomain>,
+public final class PriceArithmetic implements ModuleStructure<PriceType, IntegralNumber>,
 		TotalOrderStructure<PriceType>
 {
 	private final QuotingConventionAwareArithmetic<PriceType> delegate;
@@ -50,13 +50,13 @@ public final class PriceArithmetic implements ModuleStructure<PriceType, Integer
 	}
 
 	@Override
-	public RingStructure<IntegersAsEuclideanDomain> scalars()
+	public RingStructure<IntegralNumber> scalars()
 	{
 		return IntegerEuclideanDomainStructure.INSTANCE;
 	}
 
 	@Override
-	public PriceType scale(final IntegersAsEuclideanDomain scalar, final PriceType priceType)
+	public PriceType scale(final IntegralNumber scalar, final PriceType priceType)
 	{
 		return delegate.scale(scalar, priceType);
 	}

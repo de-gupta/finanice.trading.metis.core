@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.size.quoted;
 
-import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegersAsEuclideanDomain;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumberFactory;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
@@ -83,7 +83,7 @@ final class QuotedSizeImplTest
 
 			assertQuotedSize(quotedSize.negate(), -4_500L, conventionCase.convention(), "%s - negate".formatted(as));
 			assertQuotedSize(quotedSize.zero(), 0L, conventionCase.convention(), "%s - zero".formatted(as));
-			assertQuotedSize(quotedSize.scale(IntegersAsEuclideanDomain.of(2)), 9_000L, conventionCase.convention(),
+			assertQuotedSize(quotedSize.scale(IntegralNumberFactory.of(2)), 9_000L, conventionCase.convention(),
 					"%s - scale".formatted(as));
 
 			var divisionResult = quotedSize.divide(2_000);
@@ -430,7 +430,7 @@ final class QuotedSizeImplTest
 		void returnsQuotedSizeWithTheRawValueMultipliedByTheScalar(final String as, final long value,
 		                                                           final long scalar, final long expected)
 		{
-			var result = quotedSizeInUnitsWithScale2(value).scale(IntegersAsEuclideanDomain.of(scalar));
+			var result = quotedSizeInUnitsWithScale2(value).scale(IntegralNumberFactory.of(scalar));
 
 			assertQuotedSize(result, expected, UNITS_2, as);
 		}
@@ -469,7 +469,7 @@ final class QuotedSizeImplTest
 			var dividend = quotedSizeInUnitsWithScale2(5_612L);
 			DivisionResult<QuotedSize<SizeQuotingUnit.Units>> result = dividend.divide(20);
 
-			var recomposed = result.quotient().scale(IntegersAsEuclideanDomain.of(20)).add(result.remainder());
+			var recomposed = result.quotient().scale(IntegralNumberFactory.of(20)).add(result.remainder());
 
 			assertQuotedSize(recomposed, 5_612L, UNITS_2, "20 * quotient + remainder");
 		}

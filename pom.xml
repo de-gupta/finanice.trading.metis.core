@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.github.de-gupta</groupId>
         <artifactId>de-gupta-parent</artifactId>
-        <version>0.11.0</version>
+        <version>0.11.2</version>
     </parent>
 
     <name>${project.artifactId}</name>
@@ -26,7 +26,7 @@
         <dependency>
             <groupId>io.github.de-gupta</groupId>
             <artifactId>athena</artifactId>
-            <version>0.14.1-SNAPSHOT</version>
+            <!--            <version>0.14.1-SNAPSHOT</version>-->
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

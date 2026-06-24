@@ -2,11 +2,11 @@ package de.gupta.metis.core.types.number;
 
 import de.gupta.commons.utility.math.algebra.element.module.Module;
 import de.gupta.commons.utility.math.algebra.element.ordered.OrderedEuclideanDomain;
-import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegersAsEuclideanDomain;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumber;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.metis.core.types.rounding.ScalarRoundingPolicy;
 
-public sealed interface TradingNumber extends Module<TradingNumber, IntegersAsEuclideanDomain>,
+public sealed interface TradingNumber extends Module<TradingNumber, IntegralNumber>,
 		OrderedEuclideanDomain<TradingNumber> permits TradingNumberImpl
 {
 	DivisionResult<TradingNumber> divide(int divisor);

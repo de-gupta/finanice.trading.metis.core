@@ -1,6 +1,6 @@
 package de.gupta.metis.core.types.price.quoted;
 
-import de.gupta.commons.utility.math.algebra.element.ring.standard.IntegersAsEuclideanDomain;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumberFactory;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
@@ -357,7 +357,7 @@ final class QuotedPriceImplTest
 		void returnsQuotedPriceWithTheRawValueMultipliedByTheScalar(final String as, final long value,
 		                                                            final long scalar, final long expected)
 		{
-			var result = ticks2(value).scale(IntegersAsEuclideanDomain.of(scalar));
+			var result = ticks2(value).scale(IntegralNumberFactory.of(scalar));
 
 			assertQuotedPrice(result, expected, TICKS_2, as);
 		}
@@ -396,7 +396,7 @@ final class QuotedPriceImplTest
 			var dividend = ticks2(5_612L);
 			DivisionResult<QuotedPrice<PriceQuotingUnit.Ticks>> result = dividend.divide(20);
 
-			var recomposed = result.quotient().scale(IntegersAsEuclideanDomain.of(20)).add(result.remainder());
+			var recomposed = result.quotient().scale(IntegralNumberFactory.of(20)).add(result.remainder());
 
 			assertQuotedPrice(recomposed, 5_612L, TICKS_2, "20 * quotient + remainder");
 		}

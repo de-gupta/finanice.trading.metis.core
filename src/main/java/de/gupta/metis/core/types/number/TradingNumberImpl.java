@@ -66,7 +66,7 @@ final class TradingNumberImpl implements TradingNumber
 	}
 
 	@Override
-	public long norm()
+	public Long norm()
 	{
 		return IntegralNumberFactory.of(value).norm();
 	}

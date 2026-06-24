@@ -1,5 +1,6 @@
 package de.gupta.metis.core.types.money;
 
+import de.gupta.commons.utility.math.algebra.element.ring.standard.rationals.RationalNumber;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.currency.Currency;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
@@ -25,6 +26,13 @@ final class MoneyTypeTest
 	private static MoneyType<Currency.USD> usd(final long value)
 	{
 		return MoneyTypeFactory.of(TradingNumberFactory.of(value), Currency.USD.INSTANCE);
+	}
+
+	private static void assertRationalNumber(final RationalNumber actual, final long expectedNumerator,
+	                                         final long expectedDenominator, final String as)
+	{
+		assertThat(actual.numerator().value()).as("%s - numerator", as).isEqualTo(expectedNumerator);
+		assertThat(actual.denominator().value()).as("%s - denominator", as).isEqualTo(expectedDenominator);
 	}
 
 	@Nested
@@ -212,6 +220,29 @@ final class MoneyTypeTest
 					Arguments.of("0 = 0", 0L, 0L, OrderRelation.EQUAL),
 					Arguments.of("positive > negative", 1L, -1L, OrderRelation.GREATER_THAN),
 					Arguments.of("negative < positive", -1L, 1L, OrderRelation.LESS_THAN)
+			);
+		}
+	}
+
+	@Nested
+	@DisplayName("when computing a ratio")
+	final class WhenComputingARatio
+	{
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsExactRatioCases")
+		@DisplayName("returns the exact ratio of the raw money values")
+		void returnsTheExactRatioOfTheRawMoneyValues(final String as, final long numerator, final long denominator,
+		                                             final long expectedNumerator, final long expectedDenominator)
+		{
+			assertRationalNumber(usd(numerator).ratio(usd(denominator)), expectedNumerator, expectedDenominator, as);
+		}
+
+		private static Stream<Arguments> returnsExactRatioCases()
+		{
+			return Stream.of(
+					Arguments.of("120 / 100 = 6/5", 120L, 100L, 6L, 5L),
+					Arguments.of("45 / 120 = 3/8", 45L, 120L, 3L, 8L),
+					Arguments.of("-45 / 120 = -3/8", -45L, 120L, -3L, 8L)
 			);
 		}
 	}

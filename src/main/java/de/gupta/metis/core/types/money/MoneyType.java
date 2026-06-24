@@ -1,6 +1,8 @@
 package de.gupta.metis.core.types.money;
 
 import de.gupta.commons.utility.math.algebra.element.binary.notation.additive.AdditiveAbelianGroup;
+import de.gupta.commons.utility.math.algebra.element.module.ScalarQuotientable;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.rationals.RationalNumber;
 import de.gupta.commons.utility.math.ordering.element.TotallyOrdered;
 import de.gupta.metis.core.types.arithmetic.MoneyArithmetic;
 import de.gupta.metis.core.types.currency.Currency;
@@ -12,7 +14,8 @@ import de.gupta.metis.core.types.rounding.ScalarRoundingPolicy;
 import de.gupta.metis.core.types.size.quoted.QuotedSize;
 
 public sealed interface MoneyType<C extends Currency>
-		extends AdditiveAbelianGroup<MoneyType<C>>, TotallyOrdered<MoneyType<C>> permits MoneyTypeImpl
+		extends AdditiveAbelianGroup<MoneyType<C>>, TotallyOrdered<MoneyType<C>>,
+		ScalarQuotientable<MoneyType<C>, RationalNumber> permits MoneyTypeImpl
 {
 	C currency();
 

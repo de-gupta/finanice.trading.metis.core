@@ -1,6 +1,7 @@
 package de.gupta.metis.core.types.price.quoted;
 
 import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumber;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.rationals.RationalNumber;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.arithmetic.PriceArithmetic;
@@ -22,6 +23,12 @@ final class QuotedPriceImpl<U extends PriceQuotingUnit> implements QuotedPrice<U
 	public QuotedPrice<U> negate()
 	{
 		return with(delegate.negate(price));
+	}
+
+	@Override
+	public RationalNumber ratio(final QuotedPrice<U> denominator)
+	{
+		return PriceArithmetic.of(convention, denominator.convention()).ratio(price, denominator.price());
 	}
 
 	QuotedPrice<U> with(final PriceType price)

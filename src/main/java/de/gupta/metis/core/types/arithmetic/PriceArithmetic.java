@@ -1,7 +1,9 @@
 package de.gupta.metis.core.types.arithmetic;
 
 import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumber;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.rationals.RationalNumber;
 import de.gupta.commons.utility.math.algebra.structure.module.ModuleStructure;
+import de.gupta.commons.utility.math.algebra.structure.module.ScalarQuotientableStructure;
 import de.gupta.commons.utility.math.algebra.structure.ring.RingStructure;
 import de.gupta.commons.utility.math.algebra.structure.ring.standard.IntegerEuclideanDomainStructure;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
@@ -11,7 +13,7 @@ import de.gupta.metis.core.types.price.PriceTypeFactory;
 import de.gupta.metis.core.types.quoting.PriceQuotingConvention;
 
 public final class PriceArithmetic implements ModuleStructure<PriceType, IntegralNumber>,
-		TotalOrderStructure<PriceType>
+		TotalOrderStructure<PriceType>, ScalarQuotientableStructure<PriceType, RationalNumber>
 {
 	private final QuotingConventionAwareArithmetic<PriceType> delegate;
 
@@ -59,6 +61,12 @@ public final class PriceArithmetic implements ModuleStructure<PriceType, Integra
 	public PriceType scale(final IntegralNumber scalar, final PriceType priceType)
 	{
 		return delegate.scale(scalar, priceType);
+	}
+
+	@Override
+	public RationalNumber ratio(final PriceType numerator, final PriceType denominator)
+	{
+		return delegate.ratio(numerator, denominator);
 	}
 
 	private PriceArithmetic(final PriceQuotingConvention<?> left, final PriceQuotingConvention<?> right)

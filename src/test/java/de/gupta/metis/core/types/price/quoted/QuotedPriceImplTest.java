@@ -1,6 +1,7 @@
 package de.gupta.metis.core.types.price.quoted;
 
 import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumberFactory;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.rationals.RationalNumber;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
@@ -44,6 +45,13 @@ final class QuotedPriceImplTest
 		assertThat(actual.convention())
 				.as("%s - convention", as)
 				.isEqualTo(expectedConvention);
+	}
+
+	private static void assertRationalNumber(final RationalNumber actual, final long expectedNumerator,
+	                                         final long expectedDenominator, final String as)
+	{
+		assertThat(actual.numerator().value()).as("%s - numerator", as).isEqualTo(expectedNumerator);
+		assertThat(actual.denominator().value()).as("%s - denominator", as).isEqualTo(expectedDenominator);
 	}
 
 	@Nested
@@ -417,6 +425,62 @@ final class QuotedPriceImplTest
 					Arguments.of("inexact division", 5_612L, 20, 280L, 12L),
 					Arguments.of("negative dividend uses floor division", -5_612L, 20, -281L, 8L)
 			);
+		}
+	}
+
+	@Nested
+	@DisplayName("when computing a ratio")
+	final class WhenComputingARatio
+	{
+		@ParameterizedTest(name = "{0}")
+		@MethodSource("returnsExactConventionAwareRatioCases")
+		@DisplayName("returns the exact convention-aware ratio")
+		void returnsTheExactConventionAwareRatio(final String as, final RatioCase ratioCase)
+		{
+			var numerator = quotedPrice(ratioCase.numeratorRawValue(), ratioCase.numeratorConvention());
+			var denominator = quotedPrice(ratioCase.denominatorRawValue(), ratioCase.denominatorConvention());
+
+			assertRationalNumber(numerator.ratio(denominator), ratioCase.expectedNumerator(),
+					ratioCase.expectedDenominator(), as);
+		}
+
+		private static Stream<Arguments> returnsExactConventionAwareRatioCases()
+		{
+			return Stream.of(
+					RatioCase.of("same scale 120 / 100 = 6/5",
+							PriceQuotingConvention.ticks(0), 120L,
+							PriceQuotingConvention.ticks(0), 100L,
+							6L, 5L),
+					RatioCase.of("more precise numerator scale preserves equality",
+							PriceQuotingConvention.ticks(3), 450L,
+							PriceQuotingConvention.ticks(2), 45L,
+							1L, 1L),
+					RatioCase.of("less precise numerator scale preserves equality",
+							PriceQuotingConvention.ticks(2), 45L,
+							PriceQuotingConvention.ticks(3), 450L,
+							1L, 1L),
+					RatioCase.of("mixed scales preserve exact fractional ratio",
+							PriceQuotingConvention.ticks(1), 120L,
+							PriceQuotingConvention.ticks(2), 10000L,
+							3L, 25L)
+			).map(ratioCase -> Arguments.of(ratioCase.as(), ratioCase));
+		}
+
+		private record RatioCase(String as, PriceQuotingConvention<PriceQuotingUnit.Ticks> numeratorConvention,
+		                         long numeratorRawValue,
+		                         PriceQuotingConvention<PriceQuotingUnit.Ticks> denominatorConvention,
+		                         long denominatorRawValue, long expectedNumerator, long expectedDenominator)
+		{
+			private static RatioCase of(final String as,
+			                            final PriceQuotingConvention<PriceQuotingUnit.Ticks> numeratorConvention,
+			                            final long numeratorRawValue,
+			                            final PriceQuotingConvention<PriceQuotingUnit.Ticks> denominatorConvention,
+			                            final long denominatorRawValue, final long expectedNumerator,
+			                            final long expectedDenominator)
+			{
+				return new RatioCase(as, numeratorConvention, numeratorRawValue, denominatorConvention,
+						denominatorRawValue, expectedNumerator, expectedDenominator);
+			}
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package de.gupta.metis.core.types.size.quoted;
 
 import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumber;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.rationals.RationalNumber;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.metis.core.types.arithmetic.SizeArithmetic;
 import de.gupta.metis.core.types.number.TradingNumberFactory;
@@ -21,6 +22,12 @@ final class QuotedSizeImpl<U extends SizeQuotingUnit> implements QuotedSize<U>
 	public QuotedSize<U> negate()
 	{
 		return with(delegate.negate(size));
+	}
+
+	@Override
+	public RationalNumber ratio(final QuotedSize<U> denominator)
+	{
+		return SizeArithmetic.of(convention, denominator.convention()).ratio(size, denominator.size());
 	}
 
 	QuotedSize<U> with(final SizeType size)

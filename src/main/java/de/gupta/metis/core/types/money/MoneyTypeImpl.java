@@ -1,5 +1,6 @@
 package de.gupta.metis.core.types.money;
 
+import de.gupta.commons.utility.math.algebra.element.ring.standard.rationals.RationalNumber;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.metis.core.types.currency.Currency;
 import de.gupta.metis.core.types.number.TradingNumber;
@@ -46,5 +47,11 @@ record MoneyTypeImpl<C extends Currency>(TradingNumber value, C currency) implem
 	public String toString()
 	{
 		return value.toString() + " " + currency.toString();
+	}
+
+	@Override
+	public RationalNumber ratio(final MoneyType<C> denominator)
+	{
+		return value.ratio(denominator.value());
 	}
 }

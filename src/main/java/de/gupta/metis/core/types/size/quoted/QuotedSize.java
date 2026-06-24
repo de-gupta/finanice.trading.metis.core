@@ -1,7 +1,9 @@
 package de.gupta.metis.core.types.size.quoted;
 
 import de.gupta.commons.utility.math.algebra.element.module.Module;
+import de.gupta.commons.utility.math.algebra.element.module.ScalarQuotientable;
 import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumber;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.rationals.RationalNumber;
 import de.gupta.commons.utility.math.algebra.structure.ring.DivisionResult;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
 import de.gupta.commons.utility.math.ordering.element.TotallyOrdered;
@@ -12,7 +14,8 @@ import de.gupta.metis.core.types.rounding.ScalarRoundingPolicy;
 import de.gupta.metis.core.types.size.SizeType;
 
 public sealed interface QuotedSize<U extends SizeQuotingUnit> extends Module<QuotedSize<U>,
-		IntegralNumber>, TotallyOrdered<QuotedSize<U>> permits QuotedSizeImpl
+		IntegralNumber>, TotallyOrdered<QuotedSize<U>>, ScalarQuotientable<QuotedSize<U>, RationalNumber>
+		permits QuotedSizeImpl
 {
 	SizeType size();
 

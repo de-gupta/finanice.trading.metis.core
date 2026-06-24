@@ -4,7 +4,9 @@ import de.gupta.aletheia.collection.Dyad;
 import de.gupta.aletheia.functional.Unfolding;
 import de.gupta.commons.utility.math.algebra.element.binary.notation.additive.Zero;
 import de.gupta.commons.utility.math.algebra.element.ring.standard.integers.IntegralNumber;
+import de.gupta.commons.utility.math.algebra.element.ring.standard.rationals.RationalNumber;
 import de.gupta.commons.utility.math.algebra.structure.module.ModuleStructure;
+import de.gupta.commons.utility.math.algebra.structure.module.ScalarQuotientableStructure;
 import de.gupta.commons.utility.math.algebra.structure.ring.RingStructure;
 import de.gupta.commons.utility.math.algebra.structure.ring.standard.IntegerEuclideanDomainStructure;
 import de.gupta.commons.utility.math.ordering.OrderRelation;
@@ -18,7 +20,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 final class QuotingConventionAwareArithmetic<E extends Zero<E>>
-		implements ModuleStructure<E, IntegralNumber>,
+		implements ModuleStructure<E, IntegralNumber>, ScalarQuotientableStructure<E, RationalNumber>,
 		TotalOrderStructure<E>
 {
 	private final int scaleDifference;
@@ -72,6 +74,18 @@ final class QuotingConventionAwareArithmetic<E extends Zero<E>>
 	public E scale(final IntegralNumber scalar, final E e)
 	{
 		return factory.apply(extractor.apply(e).scale(scalar));
+	}
+
+	@Override
+	public RationalNumber ratio(final E numerator, final E denominator)
+	{
+		var scaledNumerator = extractor.apply(numerator);
+		var scaledDenominator = extractor.apply(denominator);
+
+		if (scaleDifference > 0) scaledDenominator = scaledDenominator.multiply(scaleFactor(scaleDifference));
+		if (scaleDifference < 0) scaledNumerator = scaledNumerator.multiply(scaleFactor(-scaleDifference));
+
+		return scaledNumerator.ratio(scaledDenominator);
 	}
 
 	private <R> R scaleAndApply(

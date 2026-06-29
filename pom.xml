@@ -26,7 +26,6 @@
         <dependency>
             <groupId>io.github.de-gupta</groupId>
             <artifactId>athena</artifactId>
-            <version>0.17.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

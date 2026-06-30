@@ -42,4 +42,9 @@ public sealed interface QuotedSize<U extends SizeQuotingUnit> extends Module<Quo
 	DivisionResult<QuotedSize<U>> divide(final int divisor);
 
 	QuotedSize<U> divide(final int divisor, final ScalarRoundingPolicy policy);
+
+	default RationalNumber asRational()
+	{
+		return this.ratio(QuotedSizeFactory.of(1, convention()));
+	}
 }

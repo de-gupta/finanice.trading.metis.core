@@ -29,4 +29,9 @@ public sealed interface QuotedPrice<U extends PriceQuotingUnit> extends Module<Q
 	QuotedPrice<U> divide(final int divisor, final ScalarRoundingPolicy policy);
 
 	PriceQuotingConvention<U> convention();
+
+	default RationalNumber asRational()
+	{
+		return this.ratio(QuotedPriceFactory.of(1, convention()));
+	}
 }

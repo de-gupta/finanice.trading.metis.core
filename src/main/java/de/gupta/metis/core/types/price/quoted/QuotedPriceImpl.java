@@ -82,13 +82,13 @@ final class QuotedPriceImpl<U extends PriceQuotingUnit> implements QuotedPrice<U
 	}
 
 	@Override
-	public DivisionResult<QuotedPrice<U>> divide(final int divisor)
+	public DivisionResult<QuotedPrice<U>> divide(final long divisor)
 	{
 		return price.value().divide(divisor).map(value -> with(PriceTypeFactory.of(value)));
 	}
 
 	@Override
-	public QuotedPrice<U> divide(final int divisor, final ScalarRoundingPolicy policy)
+	public QuotedPrice<U> divide(final long divisor, final ScalarRoundingPolicy policy)
 	{
 		return with(PriceTypeFactory.of(price.value().quotient(TradingNumberFactory.of(divisor), policy)));
 	}

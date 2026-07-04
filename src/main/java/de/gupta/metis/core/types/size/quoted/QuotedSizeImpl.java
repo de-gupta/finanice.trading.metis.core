@@ -81,7 +81,7 @@ final class QuotedSizeImpl<U extends SizeQuotingUnit> implements QuotedSize<U>
 	}
 
 	@Override
-	public DivisionResult<QuotedSize<U>> divide(final int divisor)
+	public DivisionResult<QuotedSize<U>> divide(final long divisor)
 	{
 		return size.value().divide(divisor).map(value -> with(SizeTypeFactory.of(value)));
 	}

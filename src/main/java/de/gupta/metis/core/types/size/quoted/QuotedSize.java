@@ -39,7 +39,7 @@ public sealed interface QuotedSize<U extends SizeQuotingUnit> extends Module<Quo
 
 	QuotedSize<U> requote(final SizeQuotingConvention<U> targetConvention);
 
-	DivisionResult<QuotedSize<U>> divide(final int divisor);
+	DivisionResult<QuotedSize<U>> divide(final long divisor);
 
 	QuotedSize<U> divide(final int divisor, final ScalarRoundingPolicy policy);
 

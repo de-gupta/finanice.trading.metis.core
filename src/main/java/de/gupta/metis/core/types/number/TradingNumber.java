@@ -12,7 +12,7 @@ public sealed interface TradingNumber
 		extends Module<TradingNumber, IntegralNumber>, ScalarQuotientable<TradingNumber, RationalNumber>,
 		OrderedEuclideanDomain<TradingNumber> permits TradingNumberImpl
 {
-	DivisionResult<TradingNumber> divide(int divisor);
+	DivisionResult<TradingNumber> divide(long divisor);
 
 	default TradingNumber quotient(final TradingNumber divisor, final ScalarRoundingPolicy policy)
 	{

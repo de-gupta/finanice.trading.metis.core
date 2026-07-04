@@ -24,9 +24,9 @@ public sealed interface QuotedPrice<U extends PriceQuotingUnit> extends Module<Q
 
 	QuotedPrice<U> requote(final PriceQuotingConvention<U> targetConvention);
 
-	DivisionResult<QuotedPrice<U>> divide(final int divisor);
+	DivisionResult<QuotedPrice<U>> divide(final long divisor);
 
-	QuotedPrice<U> divide(final int divisor, final ScalarRoundingPolicy policy);
+	QuotedPrice<U> divide(final long divisor, final ScalarRoundingPolicy policy);
 
 	PriceQuotingConvention<U> convention();
 

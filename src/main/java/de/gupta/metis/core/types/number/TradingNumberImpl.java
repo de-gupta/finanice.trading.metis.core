@@ -104,7 +104,7 @@ final class TradingNumberImpl implements TradingNumber
 	}
 
 	@Override
-	public DivisionResult<TradingNumber> divide(final int divisor)
+	public DivisionResult<TradingNumber> divide(final long divisor)
 	{
 		return divideWithRemainder(TradingNumberFactory.of(divisor));
 	}
